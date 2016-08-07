@@ -1,0 +1,11 @@
+#+TITLE: common emcas comfiguration
+
+* main part of my common emacs configuration
+
+Start with a simple test to check configuration via org-mode is working.
+
+** misc
+
+#+BEGIN_SRC emacs-lisp
+(tool-bar-mode -1)
+#+END_SRC

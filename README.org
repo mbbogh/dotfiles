@@ -1,0 +1,46 @@
+#+TITLE: README for my github dotfile repo
+
+* my merged dotfiles
+
+** dotfile bankruptcy
+
+Over the years a lot of different dotfiles build-up on the different computer and OS installations.
+All started as the /OS default/ or /my main/ at this point it time.
+Depending on the use of the machine it got changed quickly.
+Snippets from other machines or finds on the internet got added.
+
+At this point in time, none of my machines (physical or virtual) behave exactly the same.
+
+** solution
+
+Using one location as the master for all dotfiles and machines.
+Minimise the HW/OS specific changes and have these in a /local/ include file.
+
+** proceeding
+
+If I need to change an existing (old) dotfile
+1 rename /it/ into /local/
+2 create an empty dotfile
+3 include the old /local/ as a whole
+4 add the new part to be useable on all machines 
+5 if the change is HW/OS specific add it to the local file, but seperate of the /original/ local
+6 on the other machines copy the dotfile to /local/ and download the new common dotfile
+
+*** editor
+
+Moving back to *emacs*. The new processor in use doesn't relay on the manufacturer specific *eclipse* version.
+On the embeded machines are still simple/reduced *vi* versions and still no *vim*.
+As the new/better editing mode use *evil*.
+
+**** emacs
+
+**** vim
+
+Plugin functionality I will want on emacs.
+  
+*** shell
+
+Use only bash?
+Still not possible to get an actual *zsh* version on all machines at work.
+Many of the zsh feature I love moved into bash.
+Also I prefere a consistant setup over a mixed, as the time about 50% at each shell.
