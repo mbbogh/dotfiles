@@ -2,10 +2,114 @@
 
 * main part of my common emacs configuration
 
-Start with a simple test to check configuration via org-mode is working.
+example for org-mode configurations
+https://github.com/mwfogleman/config/blob/master/home/.emacs.d/michael.org
+    package init, than read org with babel
+https://github.com/hrs/dotfiles/blob/master/emacs.d/configuration.org
+    include only org with babel
+https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
+    include only .el
 
 ** misc
 
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode -1)
+(if window-system
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+)
+#+END_SRC
+
+*** on OS X
+Get the key-layout as used by Linux/Windows.
+
+#+BEGIN_SRC emacs-lisp
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil) ; needed for none US keyboards to enter symbols
+#+END_SRC
+
+** package support
+
+Use not only the default package source but also melpa.
+
+*** melpa
+
+#+BEGIN_SRC emacs-lisp
+(package-initialize t)
+(setq package-enable-at-startup nil)
+(require 'package)
+(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
+#+END_SRC
+
+*** use-package
+
+Looks like this is the simplest way to instal and configure packages.
+This will bootstrap the package installation.
+
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+#+END_SRC
+
+** tools
+
+*** evil
+
+from evil home page https://bitbucket.org/lyro/evil/wiki/Home
+
+#+BEGIN_SRC emacs-lisp
+(use-package evil
+  :ensure t
+  :init (evil-mode 1)
+  :bind (("M-x" . smex)
+         :map evil-insert-state-map
+         ("M-x" . execute-extended-command)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package linum-relative
+  :ensure t
+  :config
+  (global-linum-mode)
+  (setq linum-format 'linum-relative) ; didn't need in old config - what's the difference?
+  (setq linum-relative-current-symbol "") ; http://emacs.stackexchange.com/questions/19532/hybrid-line-number-mode-in-emacs
+)
+#+END_SRC
+
+*** helm
+
+#+BEGIN_SRC emacs-lisp
+(use-package helm
+  :ensure t
+  :bind (("C-x b" . helm-buffers-list)
+         ("C-x r b" . helm-bookmarks)))
+#+END_SRC
+
+** programming
+
+*** flycheck
+Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using-emacs-12-python/).
+
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :config
+  (global-flycheck-mode t))
+#+END_SRC
+
+** test
+
+*** golden ratio
+
+Was talked about in one of the hangouts.
+The split window will not be 50/50, but the active one will be 2/3.
+
+#+BEGIN_SRC emacs-lisp
+(use-package golden-ratio
+  :ensure t
+  :diminish golden-ratio-mode
+  :init
+  (golden-ratio-mode 1)
+  (setq golden-ratio-auto-scale t))
 #+END_SRC
