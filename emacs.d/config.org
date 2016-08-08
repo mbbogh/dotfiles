@@ -12,10 +12,17 @@ https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
 
 ** misc
 
+*** common
+
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
+#+END_SRC
+
+*** GUI
 #+BEGIN_SRC emacs-lisp
 (if window-system
   (tool-bar-mode -1)
-  (menu-bar-mode -1)
+;;(menu-bar-mode -1)
 )
 #+END_SRC
 
@@ -27,11 +34,14 @@ Get the key-layout as used by Linux/Windows.
 (setq mac-option-modifier nil) ; needed for none US keyboards to enter symbols
 #+END_SRC
 
+
 ** package support
 
 Use not only the default package source but also melpa.
 
 *** melpa
+
+    Should /package-initialize/ be before or after melpa is added to the archive list?
 
 #+BEGIN_SRC emacs-lisp
 (package-initialize t)
@@ -43,7 +53,6 @@ Use not only the default package source but also melpa.
 *** use-package
 
 Looks like this is the simplest way to instal and configure packages.
-This will bootstrap the package installation.
 
 #+BEGIN_SRC emacs-lisp
 (unless (package-installed-p 'use-package)
@@ -53,6 +62,37 @@ This will bootstrap the package installation.
 #+END_SRC
 
 ** tools
+*** org
+
+I think this is not needed
+
+    (require 'org-install)
+
+at least it is working without.
+
+#+BEGIN_SRC emacs-lisp
+(define-key global-map "\C-cc" 'org-capture)
+;(setq org-export-coding-system ’utf-8)
+#+END_SRC
+
+**** capture
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates
+        '(("t" "Todo"
+            entry (file+headline "~/notes/inbox/org_capture_todo.org" "Tasks")
+            "* TODO %?\n %i\n %a")
+          ("j" "Journal entry"
+            entry (file+datetree "~/notes/inbox/journal.org")
+            (file "~/.emacs.d/org-templates/journal.orgcaptmpl"))
+
+;          ("b" "Tidbit: quote, zinger, one-liner or textlet"
+;           entry
+;           (file+headline org-default-notes-file "Tidbits")
+;            (file "~/.emacs.d/org-templates/tidbit.orgcaptmpl"))
+
+         )
+)
+#+END_SRC
 
 *** evil
 
@@ -77,6 +117,29 @@ from evil home page https://bitbucket.org/lyro/evil/wiki/Home
 )
 #+END_SRC
 
+*** git
+
+Started to use magit.
+What is with the default /version control/ handling of emacs?
+
+Not sure what key to use. Looks like most use /C-x g/.
+This key, like /C-c g/ was not used on my setup.
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)))
+#+END_SRC
+
+*** projectile
+[[https://github.com/bbatsov/projectile][project on github]]
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :init (projectile-global-mode))
+;; tip from Python IDE: if yoy really like the menu, show it immediately
+;;(set ac-show-menu-immediately-on-auto-complete t)
+
+#+END_SRC
 *** helm
 
 #+BEGIN_SRC emacs-lisp
@@ -85,6 +148,12 @@ from evil home page https://bitbucket.org/lyro/evil/wiki/Home
   :bind (("C-x b" . helm-buffers-list)
          ("C-x r b" . helm-bookmarks)))
 #+END_SRC
+
+*** mail
+Should I use /gnus/ again? Or continue with mutt?
+
+alternatives
+- [[https://www.emacswiki.org/emacs/mu4e][mu4e]] like mu
 
 ** programming
 
@@ -98,6 +167,9 @@ Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using
   (global-flycheck-mode t))
 #+END_SRC
 
+*** JavaScrip
+Read before starting the setup.
+- [[http://blog.binchen.org/posts/use-js2-mode-as-minor-mode-to-process-json.html][JSON]]
 ** test
 
 *** golden ratio
@@ -113,3 +185,7 @@ The split window will not be 50/50, but the active one will be 2/3.
   (golden-ratio-mode 1)
   (setq golden-ratio-auto-scale t))
 #+END_SRC
+
+*** missing
+
+https://github.com/magnars/multiple-cursors.el
