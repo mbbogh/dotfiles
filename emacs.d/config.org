@@ -44,10 +44,13 @@ Use not only the default package source but also melpa.
     Should /package-initialize/ be before or after melpa is added to the archive list?
 
 #+BEGIN_SRC emacs-lisp
-(package-initialize t)
-(setq package-enable-at-startup nil)
 (require 'package)
+(package-initialize)
+
 (add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
+
+(package-refresh-contents)
+;(setq package-enable-at-startup nil)
 #+END_SRC
 
 *** use-package
@@ -189,3 +192,16 @@ The split window will not be 50/50, but the active one will be 2/3.
 *** missing
 
 https://github.com/magnars/multiple-cursors.el
+
+*** Imenu
+
+https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html
+The Imenu facility offers a way to find the major definitions in a file by name.
+Could be used in a C file to see all function definitions.
+
+https://github.com/bmag/imenu-list
+this will give a much better selection for /Imenu/
+
+*** outorg
+https://github.com/tj64/outorg
+switch from programming language to org mode for simpler commenting the code
