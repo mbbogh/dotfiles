@@ -10,6 +10,9 @@ https://github.com/hrs/dotfiles/blob/master/emacs.d/configuration.org
 https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
     include only .el
 
+https://github.com/jwiegley/use-package
+    this is the description for /use-package/
+
 ** misc
 
 *** common
@@ -205,3 +208,67 @@ this will give a much better selection for /Imenu/
 *** outorg
 https://github.com/tj64/outorg
 switch from programming language to org mode for simpler commenting the code
+
+*** gtags
+
+The simple example I've seen in /planet emacs/ didn't work properly.
+Started to collect information from the projects.
+Basic /gtags/ search worked.
+
+Use /ggtags/ (uninstalled) or /helm-gtags/.
+Will use /helm-gtags/.
+
+Found a good [[http://tuhdo.github.io/c-ide.htm][C-IDE]] description and started to follow. This came from [[http://emacs.stackexchange.com/questions/801/how-to-get-intelligent-auto-completion-in-c][emacs stackexchange]].
+Read all his other instructions.
+
+#+BEGIN_SRC emacs-lisp
+(use-package helm-gtags
+  :ensure t
+  :init
+  (custom-set-variables
+    '(helm-gtags-path-style 'relative)
+    '(helm-gtags-ignore-case t)
+    '(helm-gtags-auto-update t)
+    '(helm-gtags-use-input-at-cursor t)
+    '(helm-gtags-pulse-at-cursor t)
+    '(helm-gtags-prefix-key "\C-cg")
+    '(helm-gtags-suggested-key-mapping t))
+  :config
+    (add-hook 'dired-mode-hook 'helm-gtags-mode)
+    (add-hook 'eshell-mode-hook 'helm-gtags-mode)
+    (add-hook 'c-mode-hook 'helm-gtags-mode)
+    (add-hook 'c++-mode-hook 'helm-gtags-mode)
+    (add-hook 'asm-mode-hook 'helm-gtags-mode)
+    (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+    (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+    (define-key helm-gtags-mode-map (kbd "M-]") 'helm-gtags-dwim)
+    (define-key helm-gtags-mode-map (kbd "M-[") 'helm-gtags-pop-stack)
+    (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+    (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))
+
+#+END_SRC
+
+#+RESULTS:
+: helm-gtags-next-history
+
+didn't work, get void :map
+  :bind (:map helm-gtags-mode-map
+         ("C-c g a" . helm-gtags-tags-in-this-function)
+         ("C-j" . helm-gtags-select)
+         ("M-." . helm-gtags-dwim) --- at least this one doesn't work due to eval mode (command (repeat last command), in insert OK)
+         ("M-," . helm-gtags-pop-stack)
+         ("C-c <" . helm-gtags-previous-history)
+         ("C-c >" . helm-gtags-next-history)))
+
+*** speedbar
+#+BEGIN_SRC emacs-lisp
+(use-package sr-speedbar
+  :ensure t)
+#+END_SRC
+
+*** auto complete
+looks like /company/ is the prefered solution.
+what about projectile, I instlled from the Python IDE example?
+
+http://emacs.stackexchange.com/questions/712/what-are-the-differences-between-autocomplete-and-company-mode
+https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_which_is_better/
