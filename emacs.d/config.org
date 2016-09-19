@@ -1,6 +1,6 @@
 #+TITLE: common emcas comfiguration
 
-* main part of my common emacs configuration
+* introduction
 
 example for org-mode configurations
 https://github.com/mwfogleman/config/blob/master/home/.emacs.d/michael.org
@@ -13,15 +13,22 @@ https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
 https://github.com/jwiegley/use-package
     this is the description for /use-package/
 
-** misc
+* misc
 
-*** common
+check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
+
+** common
 
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
+(setq column-number-mode t)
+(show-paren-mode 1)
+
+(setq-default indent-tabs-mode nil)
+(setq tab-width 4) ; or any other preferred value
 #+END_SRC
 
-*** GUI
+** GUI
 #+BEGIN_SRC emacs-lisp
 (if window-system
   (tool-bar-mode -1)
@@ -29,7 +36,7 @@ https://github.com/jwiegley/use-package
 )
 #+END_SRC
 
-*** on OS X
+** on OS X
 Get the key-layout as used by Linux/Windows.
 
 #+BEGIN_SRC emacs-lisp
@@ -38,25 +45,24 @@ Get the key-layout as used by Linux/Windows.
 #+END_SRC
 
 
-** package support
+* package support
 
 Use not only the default package source but also melpa.
 
-*** melpa
+** melpa
 
     Should /package-initialize/ be before or after melpa is added to the archive list?
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
-
-(package-refresh-contents)
-;(setq package-enable-at-startup nil)
+;(package-refresh-contents)
 #+END_SRC
 
-*** use-package
+** use-package
 
 Looks like this is the simplest way to instal and configure packages.
 
@@ -67,8 +73,8 @@ Looks like this is the simplest way to instal and configure packages.
 (require 'use-package)
 #+END_SRC
 
-** tools
-*** org
+* tools
+** org
 
 I think this is not needed
 
@@ -81,26 +87,30 @@ at least it is working without.
 ;(setq org-export-coding-system ’utf-8)
 #+END_SRC
 
-**** capture
+*** capture
+    http://orgmode.org/manual/Capture-templates.html
+    http://orgmode.org/guide/Capture-templates.html
+    http://orgmode.org/manual/Template-expansion.html
+    http://sachachua.com/blog/2015/02/learn-take-notes-efficiently-org-mode/
+    http://koenig-haunstetten.de/2014/08/29/the-power-of-orgmode-capture-templates/
+    https://lists.gnu.org/archive/html/emacs-orgmode/2010-08/msg00458.html
+    http://stackoverflow.com/questions/9005843/interactively-enter-headline-under-which-to-place-an-entry-using-capture
+    http://stackoverflow.com/questions/13550799/how-to-use-org-mode-capture-refile-mechanism-to-build-my-own-vocabulary
 #+BEGIN_SRC emacs-lisp
 (setq org-capture-templates
         '(("t" "Todo"
-            entry (file+headline "~/notes/inbox/org_capture_todo.org" "Tasks")
+            entry (file+headline "/media/sf_insync/git/emacs_notes/capture.org" "Tasks")
             "* TODO %?\n %i\n %a")
           ("j" "Journal entry"
-            entry (file+datetree "~/notes/inbox/journal.org")
-            (file "~/.emacs.d/org-templates/journal.orgcaptmpl"))
-
-;          ("b" "Tidbit: quote, zinger, one-liner or textlet"
-;           entry
-;           (file+headline org-default-notes-file "Tidbits")
-;            (file "~/.emacs.d/org-templates/tidbit.orgcaptmpl"))
-
+            entry (file+datetree "/media/sf_insync/git/emacs_notes/journal.org")
+            "* %?\nEntered on %U\n  %i\n  %a")
+          ("c" "work CM from jira"
+            entry (file+headline "/media/sf_insync/git/emacs_notes/work_cm.org" %^{prompt}))
          )
 )
 #+END_SRC
 
-*** evil
+** evil
 
 from evil home page https://bitbucket.org/lyro/evil/wiki/Home
 
@@ -123,7 +133,7 @@ from evil home page https://bitbucket.org/lyro/evil/wiki/Home
 )
 #+END_SRC
 
-*** git
+** git
 
 Started to use magit.
 What is with the default /version control/ handling of emacs?
@@ -136,7 +146,7 @@ This key, like /C-c g/ was not used on my setup.
   :bind (("C-x g" . magit-status)))
 #+END_SRC
 
-*** projectile
+** projectile
 [[https://github.com/bbatsov/projectile][project on github]]
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
@@ -146,7 +156,7 @@ This key, like /C-c g/ was not used on my setup.
 ;;(set ac-show-menu-immediately-on-auto-complete t)
 
 #+END_SRC
-*** helm
+** helm
 
 #+BEGIN_SRC emacs-lisp
 (use-package helm
@@ -155,15 +165,45 @@ This key, like /C-c g/ was not used on my setup.
          ("C-x r b" . helm-bookmarks)))
 #+END_SRC
 
-*** mail
+** mail
 Should I use /gnus/ again? Or continue with mutt?
 
 alternatives
 - [[https://www.emacswiki.org/emacs/mu4e][mu4e]] like mu
 
-** programming
+* programming
 
-*** flycheck
+** C/C++
+see https://www.emacswiki.org/emacs/IndentingC
+
+https://github.com/Sarcasm/irony-mode
+
+#+BEGIN_SRC emacs-lisp
+;(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
+
+(setq c-default-style "stroustrup"
+    c-basic-offset 4)
+
+(use-package irony
+  :ensure t
+  :config
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'objc-mode-hook 'irony-mode)
+
+  ;; replace the `completion-at-point' and `complete-symbol' bindings in
+  ;; irony-mode's buffers by irony-mode's function
+  (defun my-irony-mode-hook ()
+    (define-key irony-mode-map [remap completion-at-point]
+      'irony-completion-at-point-async)
+    (define-key irony-mode-map [remap complete-symbol]
+      'irony-completion-at-point-async))
+  (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+#+END_SRC
+
+** flycheck
 Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using-emacs-12-python/).
 
 #+BEGIN_SRC emacs-lisp
@@ -173,12 +213,24 @@ Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using
   (global-flycheck-mode t))
 #+END_SRC
 
-*** JavaScrip
+** JavaScrip
 Read before starting the setup.
 - [[http://blog.binchen.org/posts/use-js2-mode-as-minor-mode-to-process-json.html][JSON]]
-** test
+* test
 
-*** golden ratio
+** yasnippet
+
+https://github.com/joaotavora/yasnippet
+https://github.com/AndreaCrotti/yasnippet-snippets/tree/9ce0b05f4b4d693831e67dd65d660716a8192e8d
+
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :init
+    (yas-global-mode 1))
+#+END_SRC
+
+** golden ratio
 
 Was talked about in one of the hangouts.
 The split window will not be 50/50, but the active one will be 2/3.
@@ -192,11 +244,11 @@ The split window will not be 50/50, but the active one will be 2/3.
   (setq golden-ratio-auto-scale t))
 #+END_SRC
 
-*** missing
+** missing
 
 https://github.com/magnars/multiple-cursors.el
 
-*** Imenu
+** Imenu
 
 https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html
 The Imenu facility offers a way to find the major definitions in a file by name.
@@ -205,11 +257,15 @@ Could be used in a C file to see all function definitions.
 https://github.com/bmag/imenu-list
 this will give a much better selection for /Imenu/
 
-*** outorg
+** outorg
 https://github.com/tj64/outorg
 switch from programming language to org mode for simpler commenting the code
 
-*** gtags
+** gtags
+   https://github.com/syohex/emacs-helm-gtags
+
+*dwim* looks like a usefull command *M-]*
+Still not sure what to use to jump to definition of /name/ under cursor/.
 
 The simple example I've seen in /planet emacs/ didn't work properly.
 Started to collect information from the projects.
@@ -260,15 +316,61 @@ didn't work, get void :map
          ("C-c <" . helm-gtags-previous-history)
          ("C-c >" . helm-gtags-next-history)))
 
-*** speedbar
+** speedbar
+   didn't use this feature in eclipse
+   it still looks /as bad/ as some years ago
 #+BEGIN_SRC emacs-lisp
-(use-package sr-speedbar
-  :ensure t)
+;(use-package sr-speedbar
+;  :ensure t)
 #+END_SRC
 
-*** auto complete
+** auto complete
 looks like /company/ is the prefered solution.
 what about projectile, I instlled from the Python IDE example?
 
 http://emacs.stackexchange.com/questions/712/what-are-the-differences-between-autocomplete-and-company-mode
 https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_which_is_better/
+
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :ensure t
+  :init
+  (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+
+** ace-window
+    got from Mike Zamansky [[http://cestlaz.github.io/posts/using-emacs-5-windows/][video 5]] 
+
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :ensure t
+  :init
+  (global-set-key [remap other-window] 'ace-window)
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t (:inherit ace-jump-face-foreground :height 3.0))))))
+#+END_SRC
+
+Looks like this /disables/ the 2/3 window handling.
+** lua
+http://immerrr.github.io/lua-mode/
+
+#+BEGIN_SRC emacs-lisp
+(use-package lua-mode
+  :ensure t)
+#+END_SRC
+
+** using emacs
+*** 1
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package try
+	:ensure t)
+
+(use-package which-key
+	:ensure t
+	:config
+	(which-key-mode))
+
+#+END_SRC
