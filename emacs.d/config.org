@@ -21,6 +21,24 @@ https://github.com/jwiegley/use-package
 (setq inhibit-startup-message t)
 #+END_SRC
 
+In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
+If I want to close a buffer, it is the one I'm in.
+There was an /update post/ by [[http://irreal.org/blog/?p=5585][irreal]] to us the /universal-argument/ (C-u) to get back th old behaviour.
+As I will not use any thing with this, I changed the simple key remap to the new function.
+#+BEGIN_SRC emacs-lisp
+;;(global-set-key (kbd "C-x k") 'kill-this-buffer)
+
+(defun mbb-kill-a-buffer (askp)
+  (interactive "P")
+  (if askp
+      (kill-buffer (funcall completing-read-function
+                            "Kill buffer: "
+                            (mapcar #'buffer-name (buffer-list))))
+    (kill-this-buffer)))
+
+(global-set-key (kbd "C-x k") 'mbb-kill-a-buffer)
+#+END_SRC
+
 *** GUI
 #+BEGIN_SRC emacs-lisp
 (if window-system
@@ -31,6 +49,11 @@ https://github.com/jwiegley/use-package
 
 *** on OS X
 Get the key-layout as used by Linux/Windows.
+
+TODO: test for OS X
+
+https://github.com/stig/ob-applescript.el
+not sure if I need this, bat keep the posibility in mind
 
 #+BEGIN_SRC emacs-lisp
 (setq mac-command-modifier 'meta)
@@ -272,3 +295,13 @@ what about projectile, I instlled from the Python IDE example?
 
 http://emacs.stackexchange.com/questions/712/what-are-the-differences-between-autocomplete-and-company-mode
 https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_which_is_better/
+
+*** expand region
+    from cestlaz 17
+    does this work with eval mode?
+    #+BEGIN_SRC emacs-lisp
+      (use-package expand-region
+        :ensure t
+        :config
+        (global-set-key (kbd "C-=") 'er/expand-region))
+    #+END_SRC
