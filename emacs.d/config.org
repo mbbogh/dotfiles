@@ -29,6 +29,24 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 #+END_SRC
 
 ** GUI
+In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
+If I want to close a buffer, it is the one I'm in.
+There was an /update post/ by [[http://irreal.org/blog/?p=5585][irreal]] to us the /universal-argument/ (C-u) to get back th old behaviour.
+As I will not use any thing with this, I changed the simple key remap to the new function.
+#+BEGIN_SRC emacs-lisp
+;;(global-set-key (kbd "C-x k") 'kill-this-buffer)
+
+(defun mbb-kill-a-buffer (askp)
+  (interactive "P")
+  (if askp
+      (kill-buffer (funcall completing-read-function
+                            "Kill buffer: "
+                            (mapcar #'buffer-name (buffer-list))))
+    (kill-this-buffer)))
+
+(global-set-key (kbd "C-x k") 'mbb-kill-a-buffer)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (if window-system
   (tool-bar-mode -1)
@@ -38,6 +56,11 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 
 ** on OS X
 Get the key-layout as used by Linux/Windows.
+
+TODO: test for OS X
+
+https://github.com/stig/ob-applescript.el
+not sure if I need this, bat keep the posibility in mind
 
 #+BEGIN_SRC emacs-lisp
 (setq mac-command-modifier 'meta)
@@ -59,7 +82,7 @@ Use not only the default package source but also melpa.
 (add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-;(package-refresh-contents)
+(package-refresh-contents)
 #+END_SRC
 
 ** use-package
@@ -157,6 +180,7 @@ This key, like /C-c g/ was not used on my setup.
 
 #+END_SRC
 ** helm
+https://github.com/emacs-helm/helm
 
 #+BEGIN_SRC emacs-lisp
 (use-package helm
@@ -179,6 +203,8 @@ see https://www.emacswiki.org/emacs/IndentingC
 https://github.com/Sarcasm/irony-mode
 
 #+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x c") 'compile)
+
 ;(defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
 
@@ -205,6 +231,7 @@ https://github.com/Sarcasm/irony-mode
 
 ** flycheck
 Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using-emacs-12-python/).
+http://melpa.org/#/flycheck
 
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
@@ -222,6 +249,7 @@ Read before starting the setup.
 
 https://github.com/joaotavora/yasnippet
 https://github.com/AndreaCrotti/yasnippet-snippets/tree/9ce0b05f4b4d693831e67dd65d660716a8192e8d
+http://melpa.org/#/yasnippet
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
@@ -247,6 +275,56 @@ The split window will not be 50/50, but the active one will be 2/3.
 ** missing
 
 https://github.com/magnars/multiple-cursors.el
+
+*** from VB LXDE
+Should check if the jedi/autocomplete configuration conflict with one of the other now used projects.
+If I remember correctly the Python setup didn't work.
+
+;; (require 'undo-tree)
+
+**** call search engine
+https://github.com/hrs/engine-mode
+https://www.youtube.com/watch?v=MBhJBMYfWUo
+
+default key binding C-x /
+  :x / s
+will trigger the stackoverflow search with selection
+
+(require 'engine-mode)
+(engine-mode t)
+(defengine stack-overflow
+  "https://stackoverflow.com/search?q=%s"
+  :keybinding "s")
+
+(defengine wikipedia
+  "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
+  :keybinding "E"
+  :docstring "Searchin' the wikis.")
+
+**** some autocomplete test
+
+(require 'jedi)
+;; hook up to autocomplete
+(add-to-list 'ac-sources 'ac-source-jedi-direct)
+;; enable for python-mode
+(add-hook 'python-mode-hook 'jedi:setup)
+
+;;;
+;;; the below is from youtube video
+;;;
+; https://www.youtube.com/watch?v=HTUE03LnaXA
+; https://github.com/byuksel/Emacs-as-a-C-Cplusplus-Editor-IDE-settings/blob/master/.emacs
+; search for _auto-complete_ on melpa to get more features, e.g. for clang or haskel
+(require 'auto-complete)
+(require 'auto-complete-config)
+(ac-config-default)
+
+; missing are flymake (not sure, shouldn't I use flycheck?
+; but he used it for the google coding style
+; + some more
+
+; https://github.com/auto-complete/auto-complete
+; http://auto-complete.org/doc/manual.html
 
 ** Imenu
 
@@ -374,3 +452,13 @@ http://immerrr.github.io/lua-mode/
 	(which-key-mode))
 
 #+END_SRC
+
+*** expand region
+    from cestlaz 17
+    does this work with eval mode?
+    #+BEGIN_SRC emacs-lisp
+      (use-package expand-region
+        :ensure t
+        :config
+        (global-set-key (kbd "C-=") 'er/expand-region))
+    #+END_SRC
