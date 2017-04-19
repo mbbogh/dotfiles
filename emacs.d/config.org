@@ -54,6 +54,14 @@ As I will not use any thing with this, I changed the simple key remap to the new
 )
 #+END_SRC
 
+*** Pasting with the mouse without moving the point
+Emacs in GUI mode will paste with middle-click at the mouse cursor position, not the point (like Vim).
+This bit me quite often. Disabled.
+
+#+BEGIN_SRC emacs-lisp
+(setq mouse-yank-at-point t)
+#+END_SRC
+
 ** on OS X
 Get the key-layout as used by Linux/Windows.
 
@@ -109,6 +117,11 @@ at least it is working without.
 (define-key global-map "\C-cc" 'org-capture)
 ;(setq org-export-coding-system ’utf-8)
 #+END_SRC
+
+*** org-babel
+[[https://github.com/astahlman/ob-async][ob-async]] enables asynchronous execution of org-babel src blocks
+for this to work simply add *:async* to the #+BEGIN_SRC line
+so far not sure if I need it, disadvantages?
 
 *** capture
     http://orgmode.org/manual/Capture-templates.html
@@ -462,3 +475,14 @@ http://immerrr.github.io/lua-mode/
         :config
         (global-set-key (kbd "C-=") 'er/expand-region))
     #+END_SRC
+** markdown
+Started with _Sacha_  [[https://www.reddit.com/r/emacs/comments/5jvr5i/is_it_possible_to_realtime_preview_markdown_in/][Is it possible to real-time preview markdown in Emacs]] 
+One recommendation there was [[https://github.com/mola-T/flymd][flymd]] on [[http://wikemacs.org/wiki/Markdown#Live_preview_as_you_type][wikiemacs]]
+*** flymd
+runs javascript from _rawgit.com_
+update only after file is saved
+working only with _firefox_
+#+BEGIN_SRC emacs-lisp
+(use-package flymd
+	:ensure t)
+#+END_SRC
