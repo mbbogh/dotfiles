@@ -26,6 +26,8 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 
 (setq-default indent-tabs-mode nil)
 (setq tab-width 4) ; or any other preferred value
+
+(setq-default fill-column 132)
 #+END_SRC
 
 ** GUI
@@ -256,6 +258,8 @@ http://melpa.org/#/flycheck
 ** JavaScrip
 Read before starting the setup.
 - [[http://blog.binchen.org/posts/use-js2-mode-as-minor-mode-to-process-json.html][JSON]]
+- [[https://emacs.cafe/emacs/javascript/setup/2017/04/23/emacs-setup-javascript.html][Emacs café: Setting up Emacs for JavaScript (part #1)]]
+
 * test
 
 ** yasnippet
@@ -485,4 +489,19 @@ working only with _firefox_
 #+BEGIN_SRC emacs-lisp
 (use-package flymd
 	:ensure t)
+#+END_SRC
+
+*** [[http://jblevins.org/projects/markdown-mode/][markdown mode]]
+No sure where I got the hint to try this one.
+It is also part of the _reddit_ recommendation above.
+But as I had red it, I didn't ty it. Can't remember why.
+
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 #+END_SRC
