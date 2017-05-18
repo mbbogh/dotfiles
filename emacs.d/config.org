@@ -148,6 +148,25 @@ so far not sure if I need it, disadvantages?
 )
 #+END_SRC
 
+*** my keyboard macros
+This will convert an Markdown link []() to an org mode link [[][]].
+
+https://www.emacswiki.org/emacs/KeyboardMacros
+    M-x name-last-kbd-macro
+    M-x insert-kbd-macro ---> bekomme das macro als text
+
+    wieder verwenden
+    Zeile obe (fset) mit eval-region "einlesen"
+    Zeike unten "interaktive" ausfuehren
+    global-set-key (kbd "C-c a") 'my-macro
+#+BEGIN_SRC emacs-lisp
+(fset 'md-link2-org
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([58 115 35 92 91 92 40 46 42 92 41 92 93 40 92 40 46 42 92 41 41 35 91 91 92 50 93 91 92 49 93 93 35 return] 0 "%d")) arg)))
+;; checked, 'm' is not defined, but there should be still a better key
+;; also, move it from global to org key table
+(global-set-key (kbd "C-c m") 'md-link2-org)
+#+END_SRC
+
 ** evil
 
 from evil home page https://bitbucket.org/lyro/evil/wiki/Home
@@ -259,6 +278,7 @@ http://melpa.org/#/flycheck
 Read before starting the setup.
 - [[http://blog.binchen.org/posts/use-js2-mode-as-minor-mode-to-process-json.html][JSON]]
 - [[https://emacs.cafe/emacs/javascript/setup/2017/04/23/emacs-setup-javascript.html][Emacs café: Setting up Emacs for JavaScript (part #1)]]
+- [[https://emacs.cafe/emacs/javascript/setup/2017/05/09/emacs-setup-javascript-2.html][Emacs café: Setting up Emacs for JavaScript (part #2)]]
 
 * test
 
@@ -487,8 +507,8 @@ runs javascript from _rawgit.com_
 update only after file is saved
 working only with _firefox_
 #+BEGIN_SRC emacs-lisp
-(use-package flymd
-	:ensure t)
+;;(use-package flymd
+;;	:ensure t)
 #+END_SRC
 
 *** [[http://jblevins.org/projects/markdown-mode/][markdown mode]]
