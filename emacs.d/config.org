@@ -28,6 +28,8 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 (setq tab-width 4) ; or any other preferred value
 
 (setq-default fill-column 132)
+
+(add-to-list 'auto-mode-alist '("Makefile.*" . makefile-gmake-mode))
 #+END_SRC
 
 ** GUI
