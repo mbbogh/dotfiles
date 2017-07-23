@@ -502,6 +502,10 @@ http://immerrr.github.io/lua-mode/
         (global-set-key (kbd "C-=") 'er/expand-region))
     #+END_SRC
 ** markdown
+Create own cheatsheet from:
+- [Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
+- [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+
 Started with _Sacha_  [[https://www.reddit.com/r/emacs/comments/5jvr5i/is_it_possible_to_realtime_preview_markdown_in/][Is it possible to real-time preview markdown in Emacs]] 
 One recommendation there was [[https://github.com/mola-T/flymd][flymd]] on [[http://wikemacs.org/wiki/Markdown#Live_preview_as_you_type][wikiemacs]]
 *** flymd
