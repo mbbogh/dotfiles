@@ -9,5 +9,18 @@ caption always "%{rw} * %H * | $LOGNAME | %{bw}%c %D | %{-}%-Lw%{rw}%50>%{rW}%n%
 # use ctrl-\ as hotkey instead of ctrl-a (oreilly onlamp)
 escape \034\034
 
+logfile /tmp/logtst_${DATE}
+
 screen -t root
+screen -t rip -L
 screen -t work
+
+logfile /tmp/logWork_$DATE
+screen -t work -L 6
+
+# process
+# https://xaizek.github.io/2015-11-08/switching-from-tmux-to-gnu-screen/
+# http://helpful.knobs-dials.com/index.php/Screen_and_tmux
+# http://aperiodic.net/screen/quick_reference
+# https://unix.stackexchange.com/questions/3056/save-complete-gnu-screen-session-state
+# https://superuser.com/questions/341146/make-gnu-screen-survive-reboot
