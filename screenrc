@@ -1,6 +1,12 @@
+# automatically detach on terminal hangup (so that one can attach again and continue working)
 autodetach on
+
+# don't display lengthy license and version information on startup
 startup_message off
-defscrollback 1000
+
+# use big scrollback buffer
+defscrollback 5000
+
 vbell off
 
 # linux-user 09/2004 S. 76
@@ -9,18 +15,139 @@ caption always "%{rw} * %H * | $LOGNAME | %{bw}%c %D | %{-}%-Lw%{rw}%50>%{rW}%n%
 # use ctrl-\ as hotkey instead of ctrl-a (oreilly onlamp)
 escape \034\034
 
-logfile /tmp/logtst_${DATE}
+#logfile /tmp/logtst_${DATE}
 
 screen -t root
-screen -t rip -L
+#screen -t rip -L
 screen -t work
 
-logfile /tmp/logWork_$DATE
-screen -t work -L 6
+#logfile /tmp/logWork_$DATE
+#screen -t work -L 6
 
-# process
+# process to get some more usage ideas
 # https://xaizek.github.io/2015-11-08/switching-from-tmux-to-gnu-screen/
 # http://helpful.knobs-dials.com/index.php/Screen_and_tmux
 # http://aperiodic.net/screen/quick_reference
 # https://unix.stackexchange.com/questions/3056/save-complete-gnu-screen-session-state
 # https://superuser.com/questions/341146/make-gnu-screen-survive-reboot
+
+######################################################################################################################
+###
+### http://xaizek.github.io/2015-11-08/switching-from-tmux-to-gnu-screen/
+###
+######################################################################################################################
+
+###
+### General configuration
+####
+# don't log new windows to utmp (who and such won't work, which is fine)
+deflogin off
+
+# ignore case on searches in copy-mode
+ignorecase on
+
+# assume UTF-8 encoding
+defutf8 on
+
+# use 256-color palette
+term screen-256color
+
+# disable flow control as it conflicts with Ctrl-S prefix
+defflow off
+
+# erase background with current bg color
+defbce on
+
+# remove delay after pressing escape key inside screen
+maptimeout 0
+
+# start screen with a new layout (none by default)
+layout new initial
+
+# wait up to three seconds before hiding last message (default is 5 seconds)
+msgwait 3
+
+# enable alternative screen
+altscreen on
+
+# suppress trailing blank lines when scrolling up text into the history buffer
+compacthist on
+
+###
+### Basic
+###
+# vim-like navigation between windows
+bind h focus left
+bind j focus down
+bind k focus up
+bind l focus right
+
+# reload configuration file (note that this creates extra layout due to
+# `layout new initial` command)
+bind r source ~/.screenrc
+
+# create new window with a shell prompt
+bind C screen
+
+# split horizontally creating new shell prompt
+bind - eval split 'focus down' screen
+
+# split vertically creating new shell prompt
+bind | eval 'split -v' 'focus right' screen
+
+###
+### Layouts
+###
+# switch between layouts with Alt+Number
+bindkey "^[0" layout select 0
+bindkey "^[1" layout select 1
+bindkey "^[2" layout select 2
+bindkey "^[3" layout select 3
+bindkey "^[4" layout select 4
+bindkey "^[5" layout select 5
+bindkey "^[6" layout select 6
+bindkey "^[7" layout select 7
+bindkey "^[8" layout select 8
+bindkey "^[9" layout select 9
+
+# switch to next layout
+bind n layout next
+
+# switch to previous layout
+bind p layout prev
+
+# create new empty layout
+bind N layout new
+
+# remove current layout
+bind q layout remove
+
+###
+### Copy-mode
+###
+# v - start selection
+# y - start line-wise selection
+# J - scroll down
+# K - scroll up
+markkeys "^M=v:y=V:^E=J:^Y=K"
+
+# > - copy selection to system clipboard
+bindkey -m > eval "stuff ' '" writebuf "exec sh -c 'xsel < /tmp/screen-exchange'"
+
+###
+### Resize-mode
+###
+# put screen into resize mode
+bind R command -c rsz
+
+# use hjkl keys to resize regions
+bind -c rsz h eval "resize -h -5" "command -c rsz"
+bind -c rsz j eval "resize -v -5" "command -c rsz"
+bind -c rsz k eval "resize -v +5" "command -c rsz"
+bind -c rsz l eval "resize -h +5" "command -c rsz"
+
+# use HJKL keys to move between regions
+bind -c rsz H eval "focus left"  "command -c rsz"
+bind -c rsz J eval "focus down"  "command -c rsz"
+bind -c rsz K eval "focus up"    "command -c rsz"
+bind -c rsz L eval "focus right" "command -c rsz"
