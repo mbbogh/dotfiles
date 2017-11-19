@@ -1,0 +1,13 @@
+[user]
+	name = 
+	email = 
+[push]
+	default = simple
+[alias]
+	st = status
+	co = checkout
+	br = branch
+	up = rebase
+	ci = commit
+[core]
+	editor = vim
