@@ -139,13 +139,13 @@ so far not sure if I need it, disadvantages?
 #+BEGIN_SRC emacs-lisp
 (setq org-capture-templates
         '(("t" "Todo"
-            entry (file+headline "/media/sf_insync/git/emacs_notes/capture.org" "Tasks")
+            entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Tasks")
             "* TODO %?\n %i\n %a")
           ("j" "Journal entry"
-            entry (file+datetree "/media/sf_insync/git/emacs_notes/journal.org")
+            entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/journal.org")
             "* %?\nEntered on %U\n  %i\n  %a")
           ("c" "work CM from jira"
-            entry (file+headline "/media/sf_insync/git/emacs_notes/work_cm.org" %^{prompt}))
+            entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/work_cm.org" %^{prompt}))
          )
 )
 #+END_SRC
@@ -530,4 +530,16 @@ But as I had red it, I didn't ty it. Can't remember why.
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
+#+END_SRC
+
+** epub
+https://github.com/wasamasa/nov.el
+nur lesen
+
+https://github.com/bddean/emacs-ereader
+mit org-mode und annotations
+
+#+BEGIN_SRC emacs-lisp
+(use-package ereader
+  :ensure t)
 #+END_SRC
