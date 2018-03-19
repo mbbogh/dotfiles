@@ -193,7 +193,7 @@ from evil home page https://bitbucket.org/lyro/evil/wiki/Home
 #+END_SRC
 
 ** git
-
+*** [[https://github.com/magit/magit][magit]]
 Started to use magit.
 What is with the default /version control/ handling of emacs?
 
