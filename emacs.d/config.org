@@ -265,6 +265,10 @@ https://github.com/Sarcasm/irony-mode
       (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(use-package rtags
+  :ensure t)
+#+END_SRC
 ** flycheck
 Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using-emacs-12-python/).
 http://melpa.org/#/flycheck
@@ -275,7 +279,26 @@ http://melpa.org/#/flycheck
   :config
   (global-flycheck-mode t))
 #+END_SRC
-
+from flycheck-rtags melpa page
+#+BEGIN_QUOTE
+Optional explicitly select the RTags Flycheck checker for c or c++ major mode.
+Turn off Flycheck highlighting, use the RTags one.
+Turn off automatic Flycheck syntax checking rtags does this manually.
+#+END_QUOTE
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck-rtags
+  :ensure t
+  :config
+  (defun my-flycheck-rtags-setup ()
+    "Configure flycheck-rtags for better experience."
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-highlighting-mode nil))
+  (add-hook 'c-mode-hook 'my-flycheck-rtags-setup)
+  (add-hook 'c++-mode-hook 'my-flycheck-rtags-setup)
+  (add-hook 'objc-mode-hook 'my-flycheck-rtags-setup)
+)
+#+END_SRC
 ** JavaScrip
 Read before starting the setup.
 - [[http://blog.binchen.org/posts/use-js2-mode-as-minor-mode-to-process-json.html][JSON]]
@@ -409,8 +432,8 @@ Read all his other instructions.
   :config
     (add-hook 'dired-mode-hook 'helm-gtags-mode)
     (add-hook 'eshell-mode-hook 'helm-gtags-mode)
-    (add-hook 'c-mode-hook 'helm-gtags-mode)
-    (add-hook 'c++-mode-hook 'helm-gtags-mode)
+;    (add-hook 'c-mode-hook 'helm-gtags-mode)
+;    (add-hook 'c++-mode-hook 'helm-gtags-mode)
     (add-hook 'asm-mode-hook 'helm-gtags-mode)
     (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
     (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
