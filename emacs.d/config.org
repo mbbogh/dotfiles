@@ -1,3 +1,4 @@
+#+SEQ_TODO: LATER(l) TODO(t) THINK(k) TRY(y) | DONE(d) MAYBE_ONE_DAY(m)
 #+TITLE: common emcas comfiguration
 
 * introduction
@@ -55,6 +56,8 @@ As I will not use any thing with this, I changed the simple key remap to the new
 (if window-system
   (tool-bar-mode -1)
 ;;(menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
 )
 #+END_SRC
 
@@ -136,6 +139,9 @@ so far not sure if I need it, disadvantages?
     https://lists.gnu.org/archive/html/emacs-orgmode/2010-08/msg00458.html
     http://stackoverflow.com/questions/9005843/interactively-enter-headline-under-which-to-place-an-entry-using-capture
     http://stackoverflow.com/questions/13550799/how-to-use-org-mode-capture-refile-mechanism-to-build-my-own-vocabulary
+
+an old setup used: (setq org-default-notes-file "/Users/markus/git/checkouts_from_T20/notes/capture/capture.org")
+
 #+BEGIN_SRC emacs-lisp
 (setq org-capture-templates
         '(("t" "Todo"
@@ -170,16 +176,18 @@ https://www.emacswiki.org/emacs/KeyboardMacros
 #+END_SRC
 
 ** evil
-
-from evil home page https://bitbucket.org/lyro/evil/wiki/Home
+from evil [[https://github.com/emacs-evil/evil][home page]]
+evil requires _undo tree_
+not configured, did evil load it automatically from melpa?
 
 #+BEGIN_SRC emacs-lisp
 (use-package evil
   :ensure t
   :init (evil-mode 1)
-  :bind (("M-x" . smex)
-         :map evil-insert-state-map
-         ("M-x" . execute-extended-command)))
+;  :bind (("M-x" . smex) search function not only from the start, but the middle - didn't use that feature
+;         :map evil-insert-state-map
+;         ("M-x" . execute-extended-command))
+)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -190,6 +198,13 @@ from evil home page https://bitbucket.org/lyro/evil/wiki/Home
   (setq linum-format 'linum-relative) ; didn't need in old config - what's the difference?
   (setq linum-relative-current-symbol "") ; http://emacs.stackexchange.com/questions/19532/hybrid-line-number-mode-in-emacs
 )
+#+END_SRC
+*** test
+cicles throug different cases
+dossent find word borders, needs to be already in one of the different spellings
+#+BEGIN_SRC emacs-lisp
+(use-package evil-string-inflection
+    :ensure t)
 #+END_SRC
 
 ** git
@@ -207,16 +222,22 @@ This key, like /C-c g/ was not used on my setup.
 
 ** projectile
 [[https://github.com/bbatsov/projectile][project on github]]
+
+Known projects are stored in _~/.emacs.d/projectile-bookmarks.eld_. A _new_ project is automatically added if I edid a file that is
+part of a git repo.
+
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
   :init (projectile-global-mode))
-;; tip from Python IDE: if yoy really like the menu, show it immediately
+;; tip from Python IDE: if you really like the menu, show it immediately
 ;;(set ac-show-menu-immediately-on-auto-complete t)
 
 #+END_SRC
 ** helm
 https://github.com/emacs-helm/helm
+
+in an old config I used: (require 'helm-config)
 
 #+BEGIN_SRC emacs-lisp
 (use-package helm
@@ -341,8 +362,6 @@ https://github.com/magnars/multiple-cursors.el
 *** from VB LXDE
 Should check if the jedi/autocomplete configuration conflict with one of the other now used projects.
 If I remember correctly the Python setup didn't work.
-
-;; (require 'undo-tree)
 
 **** call search engine
 https://github.com/hrs/engine-mode
@@ -478,8 +497,17 @@ https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_w
   (add-hook 'after-init-hook 'global-company-mode))
 #+END_SRC
 
-** ace-window
-    got from Mike Zamansky [[http://cestlaz.github.io/posts/using-emacs-5-windows/][video 5]] 
+** [[https://github.com/abo-abo/ace-window][ace-window]]
+got from Mike Zamansky [[http://cestlaz.github.io/posts/using-emacs-5-windows/][video 5]]
+
+*** from an irreal post
+The other day I was reading that you can change the default ace-window action before selecting the window to change to. By pressing
+m you can swap the current window with one of the others. Of course, that only works when there are three or more windows. When
+there are two windows it simply changes window focus immediately.
+
+I wondered if there was a way to force one of the alternate actions so I typed Ctrl+u Ctrl+x o as an experiment. It immediately
+swapped the windows. I checked the documentation and discovered that if you type Ctrl+u twice before calling ace-window it will
+delete the current window. I’m not sure why you’d want that instead of the easier Ctrl+x k but that’s what happens.
 
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
@@ -545,6 +573,9 @@ No sure where I got the hint to try this one.
 It is also part of the _reddit_ recommendation above.
 But as I had red it, I didn't ty it. Can't remember why.
 
+markdown-toggle-inline-images
+default key shortcut C-c C-x C-i ist not working
+
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :ensure t
@@ -554,6 +585,10 @@ But as I had red it, I didn't ty it. Can't remember why.
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 #+END_SRC
+*** TODO fence edit
+provides a convenient way to edit the contents of "fenced code blocks" used by markup formats like Markdown in a dedicated window
+set to the major mode appropriate for its language
+https://github.com/aaronbieber/fence-edit.el
 
 ** epub
 https://github.com/wasamasa/nov.el
@@ -566,3 +601,9 @@ mit org-mode und annotations
 (use-package ereader
   :ensure t)
 #+END_SRC
+** THINK evil-expat
+
+http://melpa.org/#/evil-expat
+
+this will add some vim _ex_ commands like :DiffOrig or :Remove
+but many like :Tyank, :Tput (tmux related) or :colorscheme I will not use or need
