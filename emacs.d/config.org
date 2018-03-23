@@ -56,8 +56,9 @@ As I will not use any thing with this, I changed the simple key remap to the new
 (if window-system
   (tool-bar-mode -1)
 ;;(menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
+; moved to back of config
+;  (scroll-bar-mode -1)
+;  (fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
 )
 #+END_SRC
 
@@ -607,3 +608,13 @@ http://melpa.org/#/evil-expat
 
 this will add some vim _ex_ commands like :DiffOrig or :Remove
 but many like :Tyank, :Tput (tmux related) or :colorscheme I will not use or need
+* last steps
+If done at begin of script the _scrollbar_ and _fringe_ change.
+A litter later these are bag as before. Try now as the last step of the configuration.
+
+#+BEGIN_SRC emacs-lisp
+(scroll-bar-mode -1)
+;(fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
+                 ;; if set to _1_ not linewraps etc are displayed
+                 ;; 0 will show the _terminal_ character
+#+END_SRC
