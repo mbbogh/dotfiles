@@ -131,6 +131,30 @@ at least it is working without.
 for this to work simply add *:async* to the #+BEGIN_SRC line
 so far not sure if I need it, disadvantages?
 
+plantUML setup from
+- http://plantuml.com/emacs
+- http://eschulte.github.io/babel-dev/DONE-integrate-plantuml-support.html
+#+BEGIN_SRC emacs-lisp
+;; active Org-babel languages
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(;; other Babel languages
+   (plantuml . t)))
+
+; https://emacs.stackexchange.com/questions/13107/replace-plantuml-source-with-generated-image-in-org-mode
+(add-hook 'org-babel-after-execute-hook
+          (lambda ()
+            (when org-inline-image-overlays
+              (org-redisplay-inline-images))))
+
+(setq org-plantuml-jar-path
+      (expand-file-name "~/bin/plantuml.jar"))
+#+END_SRC
+
+do I need the major mode plugin? https://github.com/skuro/plantuml-mode
+path and other setup http://www.alvinsim.com/diagrams-with-plantuml-and-emacs/
+
+
 *** capture
     http://orgmode.org/manual/Capture-templates.html
     http://orgmode.org/guide/Capture-templates.html
