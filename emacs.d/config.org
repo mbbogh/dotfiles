@@ -56,8 +56,9 @@ As I will not use any thing with this, I changed the simple key remap to the new
 (if window-system
   (tool-bar-mode -1)
 ;;(menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
+; moved to back of config
+;  (scroll-bar-mode -1)
+;  (fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
 )
 #+END_SRC
 
@@ -131,6 +132,30 @@ at least it is working without.
 for this to work simply add *:async* to the #+BEGIN_SRC line
 so far not sure if I need it, disadvantages?
 
+plantUML setup from
+- http://plantuml.com/emacs
+- http://eschulte.github.io/babel-dev/DONE-integrate-plantuml-support.html
+#+BEGIN_SRC emacs-lisp
+;; active Org-babel languages
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(;; other Babel languages
+   (plantuml . t)))
+
+; https://emacs.stackexchange.com/questions/13107/replace-plantuml-source-with-generated-image-in-org-mode
+(add-hook 'org-babel-after-execute-hook
+          (lambda ()
+            (when org-inline-image-overlays
+              (org-redisplay-inline-images))))
+
+(setq org-plantuml-jar-path
+      (expand-file-name "~/bin/plantuml.jar"))
+#+END_SRC
+
+do I need the major mode plugin? https://github.com/skuro/plantuml-mode
+path and other setup http://www.alvinsim.com/diagrams-with-plantuml-and-emacs/
+
+
 *** capture
     http://orgmode.org/manual/Capture-templates.html
     http://orgmode.org/guide/Capture-templates.html
@@ -145,12 +170,25 @@ an old setup used: (setq org-default-notes-file "/Users/markus/git/checkouts_fro
 
 #+BEGIN_SRC emacs-lisp
 (setq org-capture-templates
-        '(("t" "Todo"
+        '(("t" "capture todos"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Tasks")
-            "* TODO %?\n %i\n %a")
+            "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%i\n%a\n%?")
+          ("n" "capture note"
+            entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Notes")
+            "* %^{prompt}\n:DATE: %U\n\n%?")
           ("j" "Journal entry"
             entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/journal.org")
             "* %?\nEntered on %U\n  %i\n  %a")
+          ("2" "CHM2T")
+           ("2t" "capture todos"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_capture.org" "Tasks")
+             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%i\n%a\n%?")
+           ("2n" "capture note"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_capture.org" "Notes")
+             "* %^{prompt}\n:DATE: %U\n\n%?")
+           ("2j" "Journal entry"
+             entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_journal.org")
+             "* %?\nEntered on %U\n  %i\n  %a")
           ("c" "work CM from jira"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/work_cm.org" %^{prompt}))
          )
@@ -214,6 +252,23 @@ dossent find word borders, needs to be already in one of the different spellings
 #+BEGIN_SRC emacs-lisp
 (use-package evil-string-inflection
     :ensure t)
+#+END_SRC
+
+*** evil-matchit
+https://github.com/redguardtoo/evil-matchit
+
+use _%_ like before to champ to matching brace
+but it now works also for e.g. HTML tags
+
+this is not perfect
+with HTML-tags _together_ it will sometimes jump to the next
+jumps behind _>_ if there is an open tag, it will jump to this end tag, if it is an end tag it works
+need to be on 1st char of end tag _</_ is ignored, _<_ will even be the tag before
+#+BEGIN_SRC emacs-lisp
+(use-package evil-matchit
+  :ensure t
+  :init (global-evil-matchit-mode 1)
+)
 #+END_SRC
 
 ** git
@@ -409,6 +464,10 @@ Read before starting the setup.
 https://github.com/joaotavora/yasnippet
 https://github.com/AndreaCrotti/yasnippet-snippets/tree/9ce0b05f4b4d693831e67dd65d660716a8192e8d
 http://melpa.org/#/yasnippet
+
+Chen Bin:
+    My tip is to assign a unique hot key for yas/expand. So you can use single character as the key of your most frequently used
+    snippet. "a" for assert "l" for log and "i" for include. Other snippets are rarely used actually.
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
@@ -683,6 +742,7 @@ http://melpa.org/#/evil-expat
 
 this will add some vim _ex_ commands like :DiffOrig or :Remove
 but many like :Tyank, :Tput (tmux related) or :colorscheme I will not use or need
+
 ** eyebrowse
 read many thinks about it, but still not sure
 
@@ -717,3 +777,14 @@ buffers you had set up there.
 
 A useful command is =C-c C-w ,= (N.B. the comma is part of the command!) which runs =eyebrowse-rename-window-config= allowing you to
 name a workspace, and that name then appears in the modeline instead of the workspace number.
+
+* last steps
+If done at begin of script the _scrollbar_ and _fringe_ change.
+A litter later these are bag as before. Try now as the last step of the configuration.
+
+#+BEGIN_SRC emacs-lisp
+(scroll-bar-mode -1)
+;(fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
+                 ;; if set to _1_ not linewraps etc are displayed
+                 ;; 0 will show the _terminal_ character
+#+END_SRC

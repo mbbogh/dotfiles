@@ -98,7 +98,7 @@ bind | eval 'split -v' 'focus right' screen
 ###
 ### Layouts
 ###
-# create new layout with a shell prompt
+# create new layout with a shell prompt --- think this is already working
 bind C eval 'layout new' screen
 
 # switch between layouts with Alt+Number

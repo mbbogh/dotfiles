@@ -3,6 +3,7 @@ set bell-style none
 # to see all available variable/commands use: bind -p
 set editing-mode vi
 set keymap vi-command
+"\C-i": vi-complete
 
 # If set to on, words which have more than one possible completion without
 # any possible partial completion cause the matches to be listed immediately
