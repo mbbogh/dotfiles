@@ -237,6 +237,7 @@ not configured, did evil load it automatically from melpa?
 )
 #+END_SRC
 
+*** line numbers
 #+BEGIN_SRC emacs-lisp
 (use-package linum-relative
   :ensure t
@@ -246,6 +247,20 @@ not configured, did evil load it automatically from melpa?
   (setq linum-relative-current-symbol "") ; http://emacs.stackexchange.com/questions/19532/hybrid-line-number-mode-in-emacs
 )
 #+END_SRC
+
+*** increase/decrease numbers
+Not part of default emacs. There is the [[https://github.com/cofi/evil-numbers][evil numbers]] module to add this feature.
+In vim C-a and C-x are used. I think I shouldn't use C-x.
+Start using the =default= C-+ and C--, but only in =normal= mode, as it is the default for =org table sum/substract=.
+#+BEGIN_SRC emacs-lisp
+(use-package evil-numbers
+  :ensure t
+  :config
+    (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
+    (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
+)
+#+END_SRC
+
 *** test
 cicles throug different cases
 dossent find word borders, needs to be already in one of the different spellings
@@ -382,6 +397,50 @@ Should I use /gnus/ again? Or continue with mutt?
 
 alternatives
 - [[https://www.emacswiki.org/emacs/mu4e][mu4e]] like mu
+** dictionary
+*** sdcv
+commands you can use:
+- sdcv-search-pointer: Search around word and display with buffer
+- sdcv-search-pointer+: Search around word and display with =popup tooltip=
+- sdcv-search-input: Search input word and display with buffer
+- sdcv-search-input+: Search input word and display with =popup tooltip=
+
+If current mark is active, sdcv commands will translate region string, otherwise translate word around point.
+
+And then you need set two options.
+- sdcv-dictionary-simple-list:   a simple dictionary list for popup tooltip display
+- sdcv-dictionary-complete-list: a complete dictionary list for buffer display
+
+Example, setup like this:
+
+#+BEGIN_SRC emacs-lisp
+(use-package sdcv
+  :ensure t
+  :bind (("C-c d a" . sdcv-search-input)
+         ("C-c d b" . sdcv-search-pointer+))
+  :config
+    (setq sdcv-dictionary-simple-list
+        '("German - English"
+            "English - German"))
+    (setq sdcv-dictionary-complete-list
+        '("German - English"
+            "English - German")))
+#+END_SRC
+*** powerthesaurus
+selected word or input
+result in minibuffer, only one line, difficult to find a word
+#+BEGIN_SRC emacs-lisp
+(use-package powerthesaurus
+  :ensure t
+  :bind (("C-c d p" . powerthesaurus-lookup-word)))
+#+END_SRC
+*** define-word
+needed to enter the word, didn't use the word at point, as advertised
+#+BEGIN_SRC emacs-lisp
+(use-package define-word
+  :ensure t
+  :bind (("C-c d d" . define-word)))
+#+END_SRC
 
 * programming
 
@@ -475,6 +534,9 @@ Chen Bin:
   :init
     (yas-global-mode 1))
 #+END_SRC
+
+*** [[https://github.com/AndreaCrotti/yasnippet-snippets][examples/defaults in own repo]]
+check which ones to use
 
 ** golden ratio
 
