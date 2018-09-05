@@ -184,7 +184,10 @@ path and other setup http://www.alvinsim.com/diagrams-with-plantuml-and-emacs/
     http://stackoverflow.com/questions/9005843/interactively-enter-headline-under-which-to-place-an-entry-using-capture
     http://stackoverflow.com/questions/13550799/how-to-use-org-mode-capture-refile-mechanism-to-build-my-own-vocabulary
 
-an old setup used: (setq org-default-notes-file "/Users/markus/git/checkouts_from_T20/notes/capture/capture.org")
+should change the hard coded path to a shell variable
+(getenv "HOST")
+this could be tricky on the Mac is started via teh dock
+https://stackoverflow.com/questions/9663396/how-do-i-make-emacs-recognize-bash-environment-variables-for-compilation
 
 #+BEGIN_SRC emacs-lisp
 (setq org-capture-templates
@@ -209,8 +212,31 @@ an old setup used: (setq org-default-notes-file "/Users/markus/git/checkouts_fro
              "* %?\nEntered on %U\n  %i\n  %a")
           ("c" "work CM from jira"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/work_cm.org" %^{prompt}))
+          ("s" "code snippet"
+            entry (file "/tmp/snippets.org")
+            "* %?\n%(my/org-capture-code-snippet \"%F\")")
          )
 )
+#+END_SRC
+
+**** support functions
+The _irreal_ post [[http://irreal.org/blog/?p=7207][Capturing Code Snippets]] directed me to the example on how to automate the information gathering for code snippets
+from source code files.
+#+BEGIN_SRC emacs-lisp
+(defun my/org-capture-get-src-block-string (major-mode)
+    "Given a major mode symbol, return the associated org-src block
+    string that will enable syntax highlighting for that language
+
+    E.g. tuareg-mode will return 'ocaml', python-mode 'python', etc..."
+
+    (let ((mm (intern (replace-regexp-in-string "-mode" "" (format "%s" major-mode)))))
+      (or (car (rassoc mm org-src-lang-modes)) (format "%s" mm))))
+
+(defun my/org-capture-code-snippet ()
+    (let ( (a "string a")
+           (file-name (buffer-file-name))
+           (b "string b"))
+         (format "%s file: %s : %s >>%s<<" b f a file-name)))
 #+END_SRC
 
 add description from org and mike file
