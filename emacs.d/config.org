@@ -1,4 +1,5 @@
 #+SEQ_TODO: LATER(l) TODO(t) THINK(k) TRY(y) | DONE(d) MAYBE_ONE_DAY(m)
+#+TAGS: READ(r) IN_TEST(t)
 #+TITLE: common emcas comfiguration
 
 * introduction
@@ -33,6 +34,21 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 (add-to-list 'auto-mode-alist '("Makefile.*" . makefile-gmake-mode))
 #+END_SRC
 
+*** THINK [[http://pragmaticemacs.com/emacs/add-the-system-clipboard-to-the-emacs-kill-ring/][Add the system clipboard to the Emacs kill-ring]]      :READ:IN_TEST:
+#+BEGIN_QUOTE
+I (Ben Maughan) wrote previously about [[http://pragmaticemacs.com/emacs/automatically-copy-text-selected-with-the-mouse/][adding mouse selections in Emacs to the system clipboard]], and here is another tip to integrate the system
+clipboard more nicely with Emacs. This comes from the fantastic [[https://github.com/dakrone/eos/blob/master/eos.org][Emacs operating system]]set of configuration files, which are full of
+gems like this (thanks to [[http://irreal.org/blog/?p=5688][Irreal]] for pointing me to EOS).
+
+By default, if you copy something to the system clipboard (e.g. some text in firefox) and then copy or kill some text in Emacs, then
+the text from firefox is lost. If you set the option below in your [[http://pragmaticemacs.com/emacs/editing-your-emacs-config-file/][emacs config file]] then copying or killing text in Emacs will add
+the system clipboard text to the kill-ring so that you can find it when you [[http://pragmaticemacs.com/emacs/counsel-yank-pop-with-a-tweak/][cycle through your clipboard history in Emacs]].
+#+END_QUOTE
+#+BEGIN_SRC emacs-lisp
+;; Save whatever's in the current (system) clipboard before replacing it with the Emacs text.
+;; https://github.com/dakrone/eos/blob/master/eos.org
+(setq save-interprogram-paste-before-kill t)
+#+END_SRC
 ** GUI
 In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
 If I want to close a buffer, it is the one I'm in.
@@ -140,7 +156,9 @@ plantUML setup from
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(;; other Babel languages
-   (plantuml . t)))
+   (plantuml . t)
+   (python . t)
+  ))
 
 ; https://emacs.stackexchange.com/questions/13107/replace-plantuml-source-with-generated-image-in-org-mode
 (add-hook 'org-babel-after-execute-hook
@@ -473,13 +491,14 @@ https://github.com/Sarcasm/irony-mode
     (define-key irony-mode-map [remap complete-symbol]
       'irony-completion-at-point-async))
   (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 (use-package rtags
   :ensure t)
 #+END_SRC
+not sure what happened, an update of packages on t30 removed this and the flycheck-rtags package as =unused=
 ** flycheck
 Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using-emacs-12-python/).
 http://melpa.org/#/flycheck
@@ -517,7 +536,26 @@ Read before starting the setup.
 - [[https://emacs.cafe/emacs/javascript/setup/2017/05/09/emacs-setup-javascript-2.html][Emacs café: Setting up Emacs for JavaScript (part #2)]]
 
 * test
+** [[http://xenodium.com/#actionable-urls-in-emacs-buffers][actionable URLs in Emacs buffers]]
+use C-c C-o to open URL in browser not only for org-buffer
+his configuration wiht =:hook= didn't work - not known
+added the lines seperately
+#+BEGIN_SRC emacs-lisp
+(use-package goto-addr
+  :init
+    (add-hook 'compilation-mode 'goto-address-mode)
+    (add-hook 'prog-mode 'goto-address-prog-mode)
+    (add-hook 'eshell-mode 'goto-address-mode)
+    (add-hook 'shell-mode 'goto-address-mode)
+  :bind (:map goto-address-highlight-keymap
+              ("C-c C-o" . goto-address-at-point))
+              ;("M-<RET>" . newline)
+  :commands (goto-address-prog-mode
+             goto-address-mode))
+#+END_SRC
 
+** quickrun
+https://github.com/syohex/emacs-quickrun
 ** yasnippet
 
 https://github.com/joaotavora/yasnippet
@@ -532,6 +570,11 @@ Chen Bin:
 (use-package yasnippet
   :ensure t
   :init
+    (setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"                 ;; personal snippets
+        ;"/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
+        ;"/path/to/yasnippet/yasmate/snippets" ;; the yasmate collection
+        ))
     (yas-global-mode 1))
 #+END_SRC
 
