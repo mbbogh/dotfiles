@@ -49,6 +49,43 @@ the system clipboard text to the kill-ring so that you can find it when you [[ht
 ;; https://github.com/dakrone/eos/blob/master/eos.org
 (setq save-interprogram-paste-before-kill t)
 #+END_SRC
+** spell checking
+from wikipedia:
+- =spell= is the granddaddy, optimized for English
+- =aspell= is an /ispell/ replacement to get a GPL version (ispell has a /coppy left license/
+- =hunspell= originally developed for Hungarian it is usable  for many other languages, as it using a /morphological/ analyser.
+  It is used (replaced ispell) for many projects like LibreOffice, Chromium, Firefox, Mac OS X, ...
+  It is also the default installation on Fedora.
+
+#+BEGIN_SRC emacs-lisp
+    (setq ispell-program-name (executable-find "hunspell")
+          ispell-dictionary "en_GB")
+#+END_SRC
+
+If you /ispell/ a buffer and want to edit the word use *C-r* (recursive-edit). This will not end the spell session. Exit with C-M-c
+to keep the change and continue spell checking.
+
+*** [[http://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html][flyspell]]
+/flyspell-auto-correct-previous-word/ will cycle through possible replacements for the 1st backward found misspelled word.
+What is the difference to /flyspell-check-previous-highlighted-word/?
+
+From a /flycheck/ feature reguest a got, that it is not for spell checking. On one hand it sounded reasonable, on the other how is
+running the spell check on the whole buffer different to running the compiler on a source code file?
+
+there are two modules to work with =helm=
+- [[https://github.com/pronobis/helm-flyspell][helm-flyspell]] is helm only
+- [[https://github.com/d12frosted/flyspell-correct][flyspell-correct-helm]] which is a generic module with adapters for also pop-up, ivy, ...
+#+BEGIN_SRC emacs-lisp
+    (use-package flyspell-correct-ivy
+      :ensure t)
+;    (define-key flyspell-mode-map (kbd "C-;") 'helm-flyspell-correct)
+
+;      :after flyspell)
+#+END_SRC
+could not /find/ the function *helm-flyspell-correct*
+not sure what is going on
+
+
 ** GUI
 In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
 If I want to close a buffer, it is the one I'm in.
@@ -352,7 +389,10 @@ part of a git repo.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
-  :init (projectile-global-mode))
+  :init
+    (projectile-global-mode)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+)
 ;; tip from Python IDE: if you really like the menu, show it immediately
 ;;(set ac-show-menu-immediately-on-auto-complete t)
 
@@ -520,11 +560,45 @@ https://github.com/Sarcasm/irony-mode
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
+add company mode, example from [[https://jamiecollinson.com/blog/my-emacs-config/][Jamie]]
+look deeper into his config, as it is nicely formated
+#+BEGIN_SRC emacs-lisp
+  (use-package company-irony
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-irony))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (use-package rtags
   :ensure t)
 #+END_SRC
 not sure what happened, an update of packages on t30 removed this and the flycheck-rtags package as =unused=
+** python
+from all what I've read =elpy= is complicated to set up and only a conclomerate of existing packages
+so I was deciding between =jedi= and =anaconda=
+on [[https://www.reddit.com/r/emacs/comments/3a6v2i/jediel_vs_anaconda_mode/][reddit]] it looks like there are equaly many developer liking one or the other
+but =anaconda= is the more modern one and used in other projects, like =spacemacs=
+so I think this is the better choice
+
+https://lists.gnu.org/archive/html/help-gnu-emacs/2015-04/msg00267.html
+#+BEGIN_SRC emacs-lisp
+  ; https://github.com/proofit404/anaconda-mode
+  (use-package anaconda-mode
+    :ensure t
+    :config
+    (add-hook 'python-mode-hook 'anaconda-mode)
+    (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
+
+;  (add-hook 'python-mode-hook 'eldoc-mode)
+
+  ; https://github.com/proofit404/company-anaconda
+  (use-package company-anaconda
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-anaconda))
+#+END_SRC
+
 ** flycheck
 Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using-emacs-12-python/).
 http://melpa.org/#/flycheck
@@ -757,10 +831,12 @@ http://emacs.stackexchange.com/questions/712/what-are-the-differences-between-au
 https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_which_is_better/
 
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :ensure t
-  :init
-  (add-hook 'after-init-hook 'global-company-mode))
+  (use-package company
+    :ensure t
+    :init
+    (add-hook 'after-init-hook 'global-company-mode)
+    (setq company-show-numbers t) ; press M-nthDigit to select
+  )
 #+END_SRC
 
 ** [[https://github.com/abo-abo/ace-window][ace-window]]
