@@ -409,6 +409,21 @@ in an old config I used: (require 'helm-config)
          ("C-x r b" . helm-bookmarks)))
 #+END_SRC
 
+*** TODO from interview with Sacha
+*Q:* Not many packages are nearly as powerful as Helm. Being so, it may be hard for potential users to understand its value and
+potential. How could newcomers be encouraged to contribute to Helm’s development?
+
+*A:* People are often thinking that helm is a vertical version of ido, but it’s not: it’s much more powerful. It would be too long
+to enumerate all that it does, but here’s a small example among the many features helm provides:
+
+In ido or similar tools, when you complete files, the only thing you can do is press RET to jump to a file. With helm there are
+actually 44 actions possible, not including the ones that are automatically added depending on the context (i.e. filtered
+actions). All of these actions are applicable to one or many marked files, whereas in ido you can act on only one file. If you need
+a specific action that’s not part of helm by default, you can add it into the helm framework, which is same philosophy as Emacs.
+
+#+BEGIN_COMMENT
+should look into these features
+#+END_COMMENT
 *** insert Sonderzeichen
 comment from [[http://irreal.org/blog/?p=6623#comment-3540040227][John Kitchin]] points to this function as part of his [[https://github.com/jkitchin/scimax/blob/master/scimax-org.el][scimax package]]
 #+BEGIN_EXAMPLE
@@ -527,6 +542,13 @@ needed to enter the word, didn't use the word at point, as advertised
 #+END_SRC
 
 * programming
+** common
+*** [[https://gitlab.com/jgkamat/rmsbolt][RMSbolt]]
+
+#+BEGIN_SRC emacs-lisp
+use-package rmsbolt
+  :ensure t)
+#+END_SRC
 
 ** C/C++
 see https://www.emacswiki.org/emacs/IndentingC
