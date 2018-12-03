@@ -156,6 +156,7 @@ plantUML setup from
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(;; other Babel languages
+   (shell . t)
    (plantuml . t)
    (python . t)
   ))
