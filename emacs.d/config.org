@@ -15,6 +15,34 @@ https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
 https://github.com/jwiegley/use-package
     this is the description for /use-package/
 
+* package support
+
+Use not only the default package source but also melpa.
+
+** melpa
+
+    Should /package-initialize/ be before or after melpa is added to the archive list?
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(package-refresh-contents)
+#+END_SRC
+
+** use-package
+
+Looks like this is the simplest way to instal and configure packages.
+
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+#+END_SRC
+
 * misc
 
 check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
@@ -32,6 +60,12 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 (setq-default fill-column 132)
 
 (add-to-list 'auto-mode-alist '("Makefile.*" . makefile-gmake-mode))
+#+END_SRC
+
+try wraping at words and not hard at character coount
+not sure if this is usefull, activate only in /text/ mode?
+#+BEGIN_SRC emacs-lisp
+(setq-default word-wrap 1)
 #+END_SRC
 
 *** THINK [[http://pragmaticemacs.com/emacs/add-the-system-clipboard-to-the-emacs-kill-ring/][Add the system clipboard to the Emacs kill-ring]]      :READ:IN_TEST:
@@ -85,7 +119,6 @@ there are two modules to work with =helm=
 could not /find/ the function *helm-flyspell-correct*
 not sure what is going on
 
-
 ** GUI
 In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
 If I want to close a buffer, it is the one I'm in.
@@ -135,35 +168,6 @@ see http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
 #+BEGIN_SRC emacs-lisp
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier nil) ; needed for none US keyboards to enter symbols
-#+END_SRC
-
-
-* package support
-
-Use not only the default package source but also melpa.
-
-** melpa
-
-    Should /package-initialize/ be before or after melpa is added to the archive list?
-
-#+BEGIN_SRC emacs-lisp
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-
-(package-refresh-contents)
-#+END_SRC
-
-** use-package
-
-Looks like this is the simplest way to instal and configure packages.
-
-#+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
 #+END_SRC
 
 * tools
@@ -386,6 +390,7 @@ This key, like /C-c g/ was not used on my setup.
 Known projects are stored in _~/.emacs.d/projectile-bookmarks.eld_. A _new_ project is automatically added if I edid a file that is
 part of a git repo.
 
+Had a look at the [[https://www.projectile.mx/en/latest/usage/][documentation]] and tested some commands, but nothing /stuck/ so far.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
@@ -546,7 +551,7 @@ needed to enter the word, didn't use the word at point, as advertised
 *** [[https://gitlab.com/jgkamat/rmsbolt][RMSbolt]]
 
 #+BEGIN_SRC emacs-lisp
-use-package rmsbolt
+(use-package rmsbolt
   :ensure t)
 #+END_SRC
 
@@ -658,6 +663,13 @@ Read before starting the setup.
 - [[https://emacs.cafe/emacs/javascript/setup/2017/05/09/emacs-setup-javascript-2.html][Emacs café: Setting up Emacs for JavaScript (part #2)]]
 
 * test
+** [[https://github.com/alpha22jp/atomic-chrome][atomic chrome]]
+#+BEGIN_SRC emacs-lisp
+(use-package atomic-chrome
+    :ensure t)
+(atomic-chrome-start-server)
+#+END_SRC
+
 ** [[http://xenodium.com/#actionable-urls-in-emacs-buffers][actionable URLs in Emacs buffers]]
 use C-c C-o to open URL in browser not only for org-buffer
 his configuration wiht =:hook= didn't work - not known
