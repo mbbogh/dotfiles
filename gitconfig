@@ -1,13 +1,32 @@
 [user]
-	name = 
-	email = 
+  name = 
+  email = 
+
 [push]
-	default = simple
+  default = simple
+
 [alias]
-	st = status
-	co = checkout
-	br = branch
-	up = rebase
-	ci = commit
+  st = status
+  co = checkout
+  br = branch
+  up = rebase
+  ci = commit
+
+[color]
+  ui = auto
+  diff = auto
+  status = auto
+  branch = auto
+  interactive = auto
+  pager = true
+
+[color "status"]
+  added = green
+  changed = red bold
+  untracked = magenta bold
+
+[color "branch"]
+  remote = yellow
+
 [core]
-	editor = vim
+  editor = vim
