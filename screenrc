@@ -13,7 +13,9 @@ vbell off
 caption always "%{rw} * %H * | $LOGNAME | %{bw}%c %D | %{-}%-Lw%{rw}%50>%{rW}%n%f* %t %{-}%+Lw%<"
 
 # use ctrl-\ as hotkey instead of ctrl-a (oreilly onlamp)
-escape \034\034
+#escape \034\034
+# switch back to original as ssh login from ChromeOS can't produce the C-\
+# also use vim keybinding in shell, C-a is not longer used
 
 #logfile /tmp/logtst_${DATE}
 
