@@ -28,5 +28,9 @@
 [color "branch"]
   remote = yellow
 
+# https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-config.html
+[color "decorate"]
+    tag = magenta
+
 [core]
   editor = vim

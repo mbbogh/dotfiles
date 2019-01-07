@@ -211,6 +211,12 @@ https://stackoverflow.com/questions/9663396/how-do-i-make-emacs-recognize-bash-e
            ("2j" "Journal entry"
              entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_journal.org")
              "* %?\nEntered on %U\n  %i\n  %a")
+           ("2e" "capture errors (private)"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_error.org" "private")
+             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
+           ("2E" "capture errors (JIRA)"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_error.org" "jira")
+             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
           ("c" "work CM from jira"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/work_cm.org" %^{prompt}))
           ("s" "code snippet"
