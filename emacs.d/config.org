@@ -2,6 +2,72 @@
 #+TAGS: READ(r) IN_TEST(t)
 #+TITLE: common emcas comfiguration
 
+set DICPATH in OS dependant are
+#+BEGIN_SRC emacs-lisp
+(setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
+(setq exec-path (append exec-path '("/usr/local/bin")))
+
+(setenv "DICPATH" "/Library/Spelling")
+#+END_SRC
+
+https://stackoverflow.com/questions/8606954/path-and-exec-path-set-but-emacs-does-not-find-executable
+he has now a full packet to handle that
+do I need this or should I change MacOS to local plist to handle GUI path?
+https://superuser.com/questions/476752/setting-environment-variables-in-os-x-for-gui-applications
+https://apple.stackexchange.com/questions/106355/setting-the-system-wide-path-environment-variable-in-mavericks#
+
+**** Setting global environment variables on OS X
+It is a bit of a mystery for many Mac users how to create environment variables that will be available for all applications,
+including those launched from icons, etc.
+
+The process involves creating (or editing, if it exists) a special =environment.plist= file in the users home directory. You can add
+the environment variable and it's value here. Then you have to log out and in.
+
+Create the =plist= file under =~/Library/LaunchAgents/=:
+
+#+BEGIN_EXAMPLE
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+    <plist version="1.0">
+    <dict>
+     <key>Label</key>
+     <string>my.startup</string>
+     <key>ProgramArguments</key>
+     <array>
+     <string>sh</string>
+     <string>-c</string>
+     <string>launchctl setenv RV_OS_PATH_OSX /volumes/zdisk
+    launchctl setenv RV_OS_PATH_WINDOWS Z:</string>
+
+     </array>
+     <key>RunAtLoad</key>
+     <true/>
+    </dict>
+    </plist>
+#+END_EXAMPLE
+
+To activate the =environment.plist= (assuming you named it =environment.plist=), run
+
+#+BEGIN_EXAMPLE
+    launchctl load ~/Library/LaunchAgents/environment.plist
+    launchctl start ~/Library/LaunchAgents/environment.plist
+#+END_EXAMPLE
+
+If it is already loaded and you have modified the =plist file=, see your updates by running:
+
+#+BEGIN_EXAMPLE
+    launchctl stop ~/Library/LaunchAgents/environment.plist
+    launchctl unload ~/Library/LaunchAgents/environment.plist
+    launchctl load ~/Library/LaunchAgents/environment.plist
+    launchctl start ~/Library/LaunchAgents/environment.plist
+#+END_EXAMPLE
+
+For further reference, [[https://apple.stackexchange.com/questions/106355/setting-the-system-wide-path-environment-variable-in-mavericks][see this StackExchange article]] which talks about setting environment variables in previous versions of OS X
+up through 10.10 (which still works as of 10.12 Sierra).
+
+
 * introduction
 
 example for org-mode configurations
@@ -15,6 +81,77 @@ https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
 https://github.com/jwiegley/use-package
     this is the description for /use-package/
 
+* TODO look deeper into this
+git this from: https://github.com/marcowahl/.emacs.d
+** - first line of the tangle
+#+begin_src emacs-lisp :comments none
+;;; init.el --- personal emacs config file -*- lexical-binding: t ; eval: (view-mode 1)-*-
+#+end_src
+
+Set to read-only to make edits harder.  Recall that the tangled file
+is not supposed to be edited.
+
+** - conform to el-tradition
+The following lines are traditionally in every elisp file.  These
+lines also please checkdoc, the elisp documentation checker.
+
+#+begin_src emacs-lisp
+
+;;; Commentary:
+
+;; THIS FILE HAS BEEN GENERATED.
+
+
+;;; Code:
+#+end_src
+
+** - debugging
+Switch on debugging, in case.
+
+#+begin_src emacs-lisp
+(setq debug-on-error t)
+#+end_src
+
+* package support
+
+Use not only the default package source but also melpa.
+
+** melpa
+
+    Should /package-initialize/ be before or after melpa is added to the archive list?
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(package-refresh-contents)
+#+END_SRC
+
+** use-package
+
+Looks like this is the simplest way to instal and configure packages.
+
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+#+END_SRC
+
+The /use-package/keyword /:diminish/ requires [[https://github.com/myrjola/diminish.el][diminish]] to be installed.
+*do not display selected minor modes*
+#+BEGIN_SRC emacs-lisp
+(use-package diminish
+  :ensure t)
+#+END_SRC
+
+*** TODO defer
+is /defer/ no the default for all or do I need to add it explicitely?
+#+BEGIN_EXAMPLE
+  :defer 1
+#+END_EXAMPLE
 * misc
 
 check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
@@ -34,6 +171,12 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 (add-to-list 'auto-mode-alist '("Makefile.*" . makefile-gmake-mode))
 #+END_SRC
 
+try wraping at words and not hard at character coount
+not sure if this is usefull, activate only in /text/ mode?
+#+BEGIN_SRC emacs-lisp
+(setq-default word-wrap 1)
+#+END_SRC
+
 *** THINK [[http://pragmaticemacs.com/emacs/add-the-system-clipboard-to-the-emacs-kill-ring/][Add the system clipboard to the Emacs kill-ring]]      :READ:IN_TEST:
 #+BEGIN_QUOTE
 I (Ben Maughan) wrote previously about [[http://pragmaticemacs.com/emacs/automatically-copy-text-selected-with-the-mouse/][adding mouse selections in Emacs to the system clipboard]], and here is another tip to integrate the system
@@ -49,6 +192,51 @@ the system clipboard text to the kill-ring so that you can find it when you [[ht
 ;; https://github.com/dakrone/eos/blob/master/eos.org
 (setq save-interprogram-paste-before-kill t)
 #+END_SRC
+** spell checking
+from wikipedia:
+- =spell= is the granddaddy, optimized for English
+- =aspell= is an /ispell/ replacement to get a GPL version (ispell has a /coppy left license/
+- =hunspell= originally developed for Hungarian it is usable  for many other languages, as it using a /morphological/ analyser.
+  It is used (replaced ispell) for many projects like LibreOffice, Chromium, Firefox, Mac OS X, ...
+  It is also the default installation on Fedora.
+
+#+BEGIN_SRC emacs-lisp
+    (setq ispell-program-name (executable-find "hunspell"))
+    (setq ispell-dictionary "en_GB")
+    ;; Please note the list `("-d" "en_US")` contains ACTUAL parameters passed to hunspell
+    ;; You could use `("-d" "en_US,en_US-med")` to check with multiple dictionaries
+    (setq ispell-dictionary-alist '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)
+                                    ("de_DE" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "de_DE_frami") nil utf-8)))
+;;    (ispell-change-dictionary "en_GB" t) this failed - also all /1st/ iteractive actions fail
+  (setq ispell-local-dictionary "en_GB")
+  (setq ispell-local-dictionary-alist
+        '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)
+          ("de_DE" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "de_DE_frami") nil utf-8)
+          ))
+#+END_SRC
+
+If you /ispell/ a buffer and want to edit the word use *C-r* (recursive-edit). This will not end the spell session. Exit with C-M-c
+to keep the change and continue spell checking.
+
+*** [[http://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html][flyspell]]
+/flyspell-auto-correct-previous-word/ will cycle through possible replacements for the 1st backward found misspelled word.
+What is the difference to /flyspell-check-previous-highlighted-word/?
+
+From a /flycheck/ feature reguest a got, that it is not for spell checking. On one hand it sounded reasonable, on the other how is
+running the spell check on the whole buffer different to running the compiler on a source code file?
+
+there are two modules to work with =helm=
+- [[https://github.com/pronobis/helm-flyspell][helm-flyspell]] is helm only
+- [[https://github.com/d12frosted/flyspell-correct][flyspell-correct-helm]] which is a generic module with adapters for also pop-up, ivy, ...
+#+BEGIN_SRC emacs-lisp
+    (use-package flyspell-correct-helm
+      :ensure t
+      :after flyspell)
+;    (define-key flyspell-mode-map (kbd "C-;") 'helm-flyspell-correct)
+#+END_SRC
+could not /find/ the function *helm-flyspell-correct*
+not sure what is going on
+
 ** GUI
 In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
 If I want to close a buffer, it is the one I'm in.
@@ -100,35 +288,40 @@ see http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
 (setq mac-option-modifier nil) ; needed for none US keyboards to enter symbols
 #+END_SRC
 
+start emacs to debug init
+open -a /Applications/Emacs.app --args --debug-init
 
-* package support
+jump to error location with M-x goto-char
 
-Use not only the default package source but also melpa.
+*** [[http://pragmaticemacs.com/emacs/case-insensitive-sorting-in-dired-on-os-x/][Pragmatic Emacs: Case-Insensitive Sorting in Dired on OS X]]
+  :PROPERTIES:
+  :AUTHOR: Ben Maughan
+  :DATE: 20170821
+  :END:
+I like my [[http://pragmaticemacs.com/category/dired/][dired]] directory listings to be sorted by name regardless of case. This was a bit fiddly to get working in OS X, but I
+found a solution using the built-in =ls-lisp= with a few extra options, rather than the system =ls= to generate the =dired= listing.
 
-** melpa
-
-    Should /package-initialize/ be before or after melpa is added to the archive list?
-
-#+BEGIN_SRC emacs-lisp
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-
-(package-refresh-contents)
-#+END_SRC
-
-** use-package
-
-Looks like this is the simplest way to instal and configure packages.
+Here are the required settings:
 
 #+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
+    ;; using ls-lisp with these settings gives case-insensitve
+    ;; sorting on OS X
+    (require 'ls-lisp)
+    (setq dired-listing-switches "-alhG")
+    (setq ls-lisp-use-insert-directory-program nil)
+    (setq ls-lisp-ignore-case t)
+    (setq ls-lisp-use-string-collate nil)
+    ;; customise the appearance of the listing
+    (setq ls-lisp-verbosity '(links uid))
+    (setq ls-lisp-format-time-list '("%b %e %H:%M" "%b %e  %Y"))
+    (setq ls-lisp-use-localized-time-format t)
 #+END_SRC
 
+One downside of this is that it breaks [[http://pragmaticemacs.com/emacs/speedy-sorting-in-dired-with-dired-quick-sort/][dired-quick-sort]], but I can live with that.
+
+#+BEGIN_COMMENT
+don't think this worked - do another test
+#+END_COMMENT
 * tools
 ** org
 
@@ -174,6 +367,15 @@ plantUML setup from
 do I need the major mode plugin? https://github.com/skuro/plantuml-mode
 path and other setup http://www.alvinsim.com/diagrams-with-plantuml-and-emacs/
 
+Varaibles I found set in some blog posts, but the default is OK
+(setq org-src-fontify-natively t)
+
+Finally, if you work with white-space sensitive languages such as python, remember to add the followings:
+#+BEGIN_SRC emacs-lisp
+  (setq org-edit-src-content-indentation 0)
+  (setq org-src-tab-acts-natively t)
+  (setq org-src-preserve-indentation t)
+#+END_SRC
 
 *** capture
     http://orgmode.org/manual/Capture-templates.html
@@ -289,14 +491,11 @@ not configured, did evil load it automatically from melpa?
 #+END_SRC
 
 *** line numbers
+relative line numbers are now native
+
+there is more to set, like /'visual/ the controls the wrapped line handling
 #+BEGIN_SRC emacs-lisp
-(use-package linum-relative
-  :ensure t
-  :config
-  (global-linum-mode)
-  (setq linum-format 'linum-relative) ; didn't need in old config - what's the difference?
-  (setq linum-relative-current-symbol "") ; http://emacs.stackexchange.com/questions/19532/hybrid-line-number-mode-in-emacs
-)
+(setq-default display-line-numbers 'relative)
 #+END_SRC
 
 *** increase/decrease numbers
@@ -336,7 +535,13 @@ need to be on 1st char of end tag _</_ is ignored, _<_ will even be the tag befo
   :init (global-evil-matchit-mode 1)
 )
 #+END_SRC
-
+** dired                                                            :IN_TEST:
+#+BEGIN_SRC emacs-lisp
+(use-package dired-narrow
+  :ensure t
+  :bind (:map dired-mode-map
+              ("/" . dired-narrow)))
+#+END_SRC
 ** git
 *** [[https://github.com/magit/magit][magit]]
 Started to use magit.
@@ -356,14 +561,33 @@ This key, like /C-c g/ was not used on my setup.
 Known projects are stored in _~/.emacs.d/projectile-bookmarks.eld_. A _new_ project is automatically added if I edid a file that is
 part of a git repo.
 
+Had a look at the [[https://www.projectile.mx/en/latest/usage/][documentation]] and tested some commands, but nothing /stuck/ so far.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
-  :init (projectile-global-mode))
+  :init
+    (projectile-global-mode)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+)
 ;; tip from Python IDE: if you really like the menu, show it immediately
 ;;(set ac-show-menu-immediately-on-auto-complete t)
 
+(use-package ripgrep
+  :ensure t
+  :after projectile)
 #+END_SRC
+
+
+helm-grep-do-git-grep
+start typing and /wait/ - selection will apear and I'm able to change live the result
+
+projectile-ripgrep
+search result is displayed in /error buffer/
+next-error and previous-error will do the navigation
+
+not everything worked as expected
+https://emacs.stackexchange.com/questions/10842/recursive-grep-in-directory-with-helm-and-or-projectile
+
 ** helm
 https://github.com/emacs-helm/helm
 
@@ -376,6 +600,11 @@ in an old config I used: (require 'helm-config)
          ("C-x r b" . helm-bookmarks)))
 #+END_SRC
 
+setup ripgrep to be used
+hy would I need
+#+BEGIN_SRC emacs-lisp
+(setq helm-grep-ag-command "rg --color=always --smart-case --no-heading --line-number %s %s %s")
+#+END_SRC
 *** TODO from interview with Sacha
 *Q:* Not many packages are nearly as powerful as Helm. Being so, it may be hard for potential users to understand its value and
 potential. How could newcomers be encouraged to contribute to Helm’s development?
@@ -513,7 +742,7 @@ needed to enter the word, didn't use the word at point, as advertised
 *** [[https://gitlab.com/jgkamat/rmsbolt][RMSbolt]]
 
 #+BEGIN_SRC emacs-lisp
-use-package rmsbolt
+(use-package rmsbolt
   :ensure t)
 #+END_SRC
 
@@ -549,11 +778,45 @@ https://github.com/Sarcasm/irony-mode
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
+add company mode, example from [[https://jamiecollinson.com/blog/my-emacs-config/][Jamie]]
+look deeper into his config, as it is nicely formated
+#+BEGIN_SRC emacs-lisp
+  (use-package company-irony
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-irony))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (use-package rtags
   :ensure t)
 #+END_SRC
 not sure what happened, an update of packages on t30 removed this and the flycheck-rtags package as =unused=
+** python
+from all what I've read =elpy= is complicated to set up and only a conclomerate of existing packages
+so I was deciding between =jedi= and =anaconda=
+on [[https://www.reddit.com/r/emacs/comments/3a6v2i/jediel_vs_anaconda_mode/][reddit]] it looks like there are equaly many developer liking one or the other
+but =anaconda= is the more modern one and used in other projects, like =spacemacs=
+so I think this is the better choice
+
+https://lists.gnu.org/archive/html/help-gnu-emacs/2015-04/msg00267.html
+#+BEGIN_SRC emacs-lisp
+  ; https://github.com/proofit404/anaconda-mode
+  (use-package anaconda-mode
+    :ensure t
+    :config
+    (add-hook 'python-mode-hook 'anaconda-mode)
+    (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
+
+;  (add-hook 'python-mode-hook 'eldoc-mode)
+
+  ; https://github.com/proofit404/company-anaconda
+  (use-package company-anaconda
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-anaconda))
+#+END_SRC
+
 ** flycheck
 Started with the blog post [Using Emacs 12](http://cestlaz.github.io/posts/using-emacs-12-python/).
 http://melpa.org/#/flycheck
@@ -589,8 +852,39 @@ Read before starting the setup.
 - [[http://blog.binchen.org/posts/use-js2-mode-as-minor-mode-to-process-json.html][JSON]]
 - [[https://emacs.cafe/emacs/javascript/setup/2017/04/23/emacs-setup-javascript.html][Emacs café: Setting up Emacs for JavaScript (part #1)]]
 - [[https://emacs.cafe/emacs/javascript/setup/2017/05/09/emacs-setup-javascript-2.html][Emacs café: Setting up Emacs for JavaScript (part #2)]]
+** shell                                                            :IN_TEST:
+test highlighting
+looks like it doesn't work - dell after reboot
+#+BEGIN_SRC emacs-lisp
+(defconst sh-mode--string-interpolated-variable-regexp
+  "{\\$[^}\n\\\\]*\\(?:\\\\.[^}\n\\\\]*\\)*}\\|\\${\\sw+}\\|\\$\\sw+")
+
+(defun sh-mode--string-intepolated-variable-font-lock-find (limit)
+  (while (re-search-forward sh-mode--string-interpolated-variable-regexp limit t)
+    (let ((quoted-stuff (nth 3 (syntax-ppss))))
+      (when (and quoted-stuff (member quoted-stuff '(?\" ?`)))
+        (put-text-property (match-beginning 0) (match-end 0)
+                           'face 'font-lock-variable-name-face))))
+  nil)
+
+(eval-after-load 'sh-mode
+  '(progn
+     (font-lock-add-keywords
+      'sh-mode
+      `((sh-mode--string-intepolated-variable-font-lock-find))
+      'append)))
+#+END_SRC
+
+#+RESULTS:
 
 * test
+** [[https://github.com/alpha22jp/atomic-chrome][atomic chrome]]
+#+BEGIN_SRC emacs-lisp
+(use-package atomic-chrome
+    :ensure t)
+(atomic-chrome-start-server)
+#+END_SRC
+
 ** [[http://xenodium.com/#actionable-urls-in-emacs-buffers][actionable URLs in Emacs buffers]]
 use C-c C-o to open URL in browser not only for org-buffer
 his configuration wiht =:hook= didn't work - not known
@@ -611,11 +905,10 @@ added the lines seperately
 
 ** quickrun
 https://github.com/syohex/emacs-quickrun
-** yasnippet
+** [[https://github.com/joaotavora/yasnippet][yasnippet]]
+The /default/ snippets are here https://github.com/AndreaCrotti/yasnippet-snippets/tree/9ce0b05f4b4d693831e67dd65d660716a8192e8d
+Should have a look which ones to use, to not overflow my choice. Many of these I find useless, e.g. yaml ($1: $0)
 
-https://github.com/joaotavora/yasnippet
-https://github.com/AndreaCrotti/yasnippet-snippets/tree/9ce0b05f4b4d693831e67dd65d660716a8192e8d
-http://melpa.org/#/yasnippet
 
 Chen Bin:
     My tip is to assign a unique hot key for yas/expand. So you can use single character as the key of your most frequently used
@@ -624,13 +917,14 @@ Chen Bin:
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :ensure t
+  :diminish yas-minor-mode
   :init
     (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"                 ;; personal snippets
         ;"/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
         ;"/path/to/yasnippet/yasmate/snippets" ;; the yasmate collection
         ))
-    (yas-global-mode 1))
+  :config (yas-global-mode))
 #+END_SRC
 
 *** [[https://github.com/AndreaCrotti/yasnippet-snippets][examples/defaults in own repo]]
@@ -642,18 +936,17 @@ Was talked about in one of the hangouts.
 The split window will not be 50/50, but the active one will be 2/3.
 
 #+BEGIN_SRC emacs-lisp
-(use-package golden-ratio
-  :ensure t
-  :diminish golden-ratio-mode
-  :init
-  (golden-ratio-mode 1)
-  (setq golden-ratio-auto-scale t))
+;;(use-package golden-ratio
+;;  :ensure t
+;;  :diminish golden-ratio-mode
+;;  :init
+;;  (golden-ratio-mode 1)
+;;  (setq golden-ratio-auto-scale t))
 #+END_SRC
 
+disabled it, as often the windows don't change with 'C-x b' but only if I click into it
+is this due ace-window?
 ** missing
-
-https://github.com/magnars/multiple-cursors.el
-
 *** from VB LXDE
 Should check if the jedi/autocomplete configuration conflict with one of the other now used projects.
 If I remember correctly the Python setup didn't work.
@@ -786,10 +1079,12 @@ http://emacs.stackexchange.com/questions/712/what-are-the-differences-between-au
 https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_which_is_better/
 
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :ensure t
-  :init
-  (add-hook 'after-init-hook 'global-company-mode))
+  (use-package company
+    :ensure t
+    :init
+    (add-hook 'after-init-hook 'global-company-mode)
+    (setq company-show-numbers t) ; press M-nthDigit to select
+  )
 #+END_SRC
 
 ** [[https://github.com/abo-abo/ace-window][ace-window]]
@@ -938,6 +1233,28 @@ buffers you had set up there.
 A useful command is =C-c C-w ,= (N.B. the comma is part of the command!) which runs =eyebrowse-rename-window-config= allowing you to
 name a workspace, and that name then appears in the modeline instead of the workspace number.
 
+** [[https://github.com/Wilfred/helpful][helpful]]
+got this from /sacha 20181217/
+#+BEGIN_SRC emacs-lisp
+(use-package helpful
+  :ensure t)
+#+END_SRC
+** [[https://github.com/abo-abo/avy][avy]]
+looks better than [[https://github.com/winterTTr/ace-jump-mode][ace jump]] - didn't find a comparision, but lately more are using ace
+possible functions:
+- avy-goto-char
+- avy-goto-char-2
+- avy-goto-char-timer
+- avy-goto-line
+- avy-goto-word-1
+- avy-goto-word-0
+
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+  :ensure t
+  :bind (("M-s ;" . avy-goto-word-1)
+         ("M-s '" . avy-goto-char-2)))
+#+END_SRC
 * last steps
 If done at begin of script the _scrollbar_ and _fringe_ change.
 A litter later these are bag as before. Try now as the last step of the configuration.
