@@ -332,9 +332,21 @@ I think this is not needed
 at least it is working without.
 
 #+BEGIN_SRC emacs-lisp
-(define-key global-map "\C-cc" 'org-capture)
 ;(setq org-export-coding-system ’utf-8)
 #+END_SRC
+
+By default org mode only fontifies spans of text wrapped in emphasis markers (customized with org-emphasis-alist) if they are in the same line.
+As I reformat text blocks often with =M-q= a span might be split over two lines.
+[[https://emacs.stackexchange.com/questions/18101/org-mode-multi-line-emphasis-and-bold][StackExchange]] has the answer.
+
+#+BEGIN_SRC emacs-lisp
+(setcar (nthcdr 4 org-emphasis-regexp-components) 1) ; the last number is the additional lines
+(org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+#+END_SRC
+
+But as some have trouble the link to a more [[https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode/13828][detailed answer]] of a different question is useful.
+
+Should not do it over too many lines, as otherwise it will catch math or other text.
 
 *** org-babel
 [[https://github.com/astahlman/ob-async][ob-async]] enables asynchronous execution of org-babel src blocks
@@ -393,6 +405,7 @@ this could be tricky on the Mac is started via teh dock
 https://stackoverflow.com/questions/9663396/how-do-i-make-emacs-recognize-bash-environment-variables-for-compilation
 
 #+BEGIN_SRC emacs-lisp
+(define-key global-map "\C-cc" 'org-capture)
 (setq org-capture-templates
         '(("t" "capture todos"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Tasks")
@@ -571,7 +584,49 @@ Had a look at the [[https://www.projectile.mx/en/latest/usage/][documentation]] 
 )
 ;; tip from Python IDE: if you really like the menu, show it immediately
 ;;(set ac-show-menu-immediately-on-auto-complete t)
+#+END_SRC
 
+** search
+*** ripgrep
+**** ONGOING [[https://github.com/Wilfred/deadgrep][deadgrep: fast, friendly searching with ripgrep and Emacs]] ([[https://reddit.com/r/emacs/comments/8x57ck/deadgrep_fast_friendly_searching_with_ripgrep_and/][Reddit]]) :READ:NOTES:
+#+BEGIN_COMMENT
+this is also a front end for =rg= (ripgrep)
+
+read his [[https://github.com/Wilfred/deadgrep/blob/master/docs/ALTERNATIVES.md][ALTERNATIVES]] to see the =competition=
+most also use repgrip in the background
+not sure what makes /deadgrep/ special
+#+END_COMMENT
+
+***** [[https://github.com/dajva/rg.el][rg.el]]
+targets =rg=, and the results buffer shows what type of search occurred.
+
+It's built on =compilation-mode=, and you can use =rg-group-result= to combine results.
+
+*Great for*: if you want a ripgrep tool with excellent test coverage, you have =compilation-mode= shortcuts, or if you do lots of searches for words (=rg-dwim= is excellent).
+
+***** [[https://github.com/nlamirault/ripgrep.el][ripgrep.el]]
+and projectile-ripgrep (part of the same project), is an alternative to rg.el.
+
+This is also using =compilation-mode= without grouping results.
+
+*Great for*: ripgrep searches starting in the project root.
+
+***** [[https://github.com/nlamirault/socyl][Socyl]]
+is a generic text search tool that supports =rg= plus others.
+
+Socyl is also based on =compilation-mode=, and does not group results by file AFAICS. As it's generic, users must specify a search backend, as well as specifying the directory.
+
+*Great for*: Using the same search UI with multiple different search tools.
+
+***** [[https://github.com/cosmicexplorer/helm-rg][helm-rg]]
+targets Helm users.
+
+helm-rg is a [[https://github.com/emacs-helm/helm][Helm]] frontend for =rg=. In addition to the usual search features, it treats spaces in search terms specially so you
+don't need to worry about order. This neat feature means that =foo bar= is equivalent to =foo.*bar|bar.*foo=.
+
+*Great for*: Using rg with Helm, especially with multiple search terms.
+*** my setup
+#+BEGIN_SRC emacs-lisp
 (use-package ripgrep
   :ensure t
   :after projectile)
@@ -588,6 +643,9 @@ next-error and previous-error will do the navigation
 not everything worked as expected
 https://emacs.stackexchange.com/questions/10842/recursive-grep-in-directory-with-helm-and-or-projectile
 
+
+TODO: there are multiple ripgrap and projectile packages - what are the differences?
+
 ** helm
 https://github.com/emacs-helm/helm
 
@@ -601,10 +659,16 @@ in an old config I used: (require 'helm-config)
 #+END_SRC
 
 setup ripgrep to be used
-hy would I need
+why would I need
 #+BEGIN_SRC emacs-lisp
 (setq helm-grep-ag-command "rg --color=always --smart-case --no-heading --line-number %s %s %s")
 #+END_SRC
+
+also there are other packages, like [[https://github.com/cosmicexplorer/helm-rg][helm-rg]]
+what are the advantage/difference to the other packages or /nacked/ helm?
+
+
+
 *** TODO from interview with Sacha
 *Q:* Not many packages are nearly as powerful as Helm. Being so, it may be hard for potential users to understand its value and
 potential. How could newcomers be encouraged to contribute to Helm’s development?
@@ -739,6 +803,31 @@ needed to enter the word, didn't use the word at point, as advertised
 
 * programming
 ** common
+*** comment box
+Following [[http://pragmaticemacs.com/emacs/comment-boxes/][Ben Maughan]] to the original post from [[http://irreal.org/blog/?p=374][irreal]] to get the better explanation of the function.
+
+- will ignore empty lines (sometimes it failed if the 1st line was empty
+- box will start at indentation of selection
+#+BEGIN_SRC emacs-lisp
+(defun mbb-comment-box (b e)
+"Draw a box comment around the region but arrange for the region to extend to at least the fill column. Place the point after the comment box."
+
+(interactive "r")
+
+(let ((e (copy-marker e t)))
+  (goto-char b)
+  (end-of-line)
+  (insert-char ?  (- fill-column (current-column)))
+  (comment-box b e 1)
+  (goto-char e)
+  (set-marker e nil)))
+
+(global-set-key (kbd "C-c b b") 'mbb-comment-box)
+#+END_SRC
+
+#+RESULTS:
+: mbb-comment-box
+
 *** [[https://gitlab.com/jgkamat/rmsbolt][RMSbolt]]
 
 #+BEGIN_SRC emacs-lisp
@@ -759,7 +848,17 @@ https://github.com/Sarcasm/irony-mode
 
 (setq c-default-style "stroustrup"
     c-basic-offset 4)
+#+END_SRC
 
+*** irony
+#+BEGIN_COMMENT
+there a quite some hints to use /cquery= or =ccls= instead
+this should be the more modern and still developed packages - not sure about this
+
+Both look to be LSP baesd and ccls should have C++11 and C++17 features.
+#+END_COMMENT
+
+#+BEGIN_SRC emacs-lisp
 (use-package irony
   :ensure t
   :config
@@ -778,8 +877,19 @@ https://github.com/Sarcasm/irony-mode
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
-add company mode, example from [[https://jamiecollinson.com/blog/my-emacs-config/][Jamie]]
-look deeper into his config, as it is nicely formated
+Zamansky 55 hash only
+  ensure t
+  config
+  add-hook c++, c and irony-cdb-autosetup-compile-options
+
+on new Fedoray is /libclang/ missing - that why it stopped working
+needed to install clang development package
+#+BEGIN_EXAMPLE
+dnf install clang-devel
+#+END_EXAMPLE
+
+add company mode, example from [[https://jamiecollinson.com/blog/my-emacs-config/][Jamie]] (same for Zamansky 55)
+look deeper into his config, as it is nicely formatted
 #+BEGIN_SRC emacs-lisp
   (use-package company-irony
     :ensure t
@@ -787,6 +897,8 @@ look deeper into his config, as it is nicely formated
     (add-to-list 'company-backends 'company-irony))
 #+END_SRC
 
+*** tags
+some people preferred [[https://github.com/cquery-project/cquery][cquery]]/[[https://github.com/MaskRay/ccls][ccls]] over rtags - is this for /static/ code base, e.g. analysing existing code?
 #+BEGIN_SRC emacs-lisp
 (use-package rtags
   :ensure t)
@@ -936,16 +1048,26 @@ Was talked about in one of the hangouts.
 The split window will not be 50/50, but the active one will be 2/3.
 
 #+BEGIN_SRC emacs-lisp
-;;(use-package golden-ratio
-;;  :ensure t
-;;  :diminish golden-ratio-mode
-;;  :init
-;;  (golden-ratio-mode 1)
-;;  (setq golden-ratio-auto-scale t))
+(use-package golden-ratio
+  :ensure t
+  :diminish golden-ratio-mode
+  :init
+  (golden-ratio-mode 1)
+  (setq golden-ratio-auto-scale t)
+  (add-to-list 'golden-ratio-extra-commands 'ace-window))
 #+END_SRC
 
+*** configuration history
 disabled it, as often the windows don't change with 'C-x b' but only if I click into it
-is this due ace-window?
+is this due ace-window? Yes!
+
+Someone had the same problem with =window-jump=, and coded a solution with /add-advice/. But one [[https://www.reddit.com/r/emacs/comments/acgrw4/how_i_used_advice_to_make_windowjump_and/ed7vmyf][comment]] had a simple solution for =ace-window=.
+
+#+BEGIN_EXAMPLE
+(add-to-list 'golden-ratio-extra-commands 'ace-window)
+#+END_EXAMPLE
+
+With this added all works as advertised.
 ** missing
 *** from VB LXDE
 Should check if the jedi/autocomplete configuration conflict with one of the other now used projects.
@@ -1088,7 +1210,7 @@ https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_w
 #+END_SRC
 
 ** [[https://github.com/abo-abo/ace-window][ace-window]]
-got from Mike Zamansky [[http://cestlaz.github.io/posts/using-emacs-5-windows/][video 5]]
+got it from Mike Zamansky [[http://cestlaz.github.io/posts/using-emacs-5-windows/][video 5]]
 
 *** from an irreal post
 The other day I was reading that you can change the default ace-window action before selecting the window to change to. By pressing
@@ -1109,7 +1231,9 @@ delete the current window. I’m not sure why you’d want that instead of the e
      ((t (:inherit ace-jump-face-foreground :height 3.0))))))
 #+END_SRC
 
-Looks like this /disables/ the 2/3 window handling.
+*** alternatives
+=window-jump= will jump to the closest window in a particular direction (left, right, up or down).
+This is more predictable than the normal jump, but still not as /precise/ as a direct jump.
 ** lua
 http://immerrr.github.io/lua-mode/
 
