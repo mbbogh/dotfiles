@@ -361,6 +361,7 @@ plantUML setup from
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(;; other Babel languages
+   (C . t) ; https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-C.html
    (shell . t)
    (plantuml . t)
    (python . t)
@@ -389,6 +390,7 @@ Finally, if you work with white-space sensitive languages such as python, rememb
   (setq org-src-preserve-indentation t)
 #+END_SRC
 
+tangle multiple C source-blocks https://emacs.stackexchange.com/questions/29939/c-c-coding-in-emacs-org-modes-babel
 *** capture
     http://orgmode.org/manual/Capture-templates.html
     http://orgmode.org/guide/Capture-templates.html
