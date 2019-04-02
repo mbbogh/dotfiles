@@ -48,4 +48,10 @@ export C="\[\033[0;36m\]"    # cyan
 # not sure how usefull, as many code parts are in patebin or other none existing locations (>10y)
 # http://www.reddit.com/r/programming/comments/697cu/bash_users_what_do_you_have_for_your_ps1/
 
-PS1="$B\D{%Y%m%d} \t \`if (( \$? == 0 )); then echo '$G'; else echo '$R'; fi;\` [\$? \! \#] $Y\u@\h:$M\w${FG}\n\$ "
+# test different background colour, depending on usr/host
+PS1="$B\D{%Y%m%d} \t \`if (( \$? == 0 )); then echo '$G'; else echo '$R'; fi;\` [\$? \! \#] $Y\u@\h:$M\w${FG}\n$BGR\$ "
+trap 'printf \\e[0m' DEBUG
+
+# https://unix.stackexchange.com/questions/20803/customizing-bash-shell-bold-color-the-command
+# https://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
+# https://stackoverflow.com/questions/39305476/bash-prompt-with-background-color-extending-to-end-of-line

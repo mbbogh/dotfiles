@@ -406,12 +406,22 @@ should change the hard coded path to a shell variable
 this could be tricky on the Mac is started via teh dock
 https://stackoverflow.com/questions/9663396/how-do-i-make-emacs-recognize-bash-environment-variables-for-compilation
 
+add date to property from [[https://emacs.stackexchange.com/questions/26119/org-mode-adding-a-properties-drawer-to-a-capture-template][stackexchange]]
+#+BEGIN_SRC emacs-lisp
+(defun add-property-with-date-captured ()
+  "Add DATE_CAPTURED property to the current item."
+  (interactive)
+  (org-set-property "DATE_CAPTURED" (format-time-string "%F %T")))
+
+(add-hook 'org-capture-before-finalize-hook 'add-property-with-date-captured)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (define-key global-map "\C-cc" 'org-capture)
 (setq org-capture-templates
         '(("t" "capture todos"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Tasks")
-            "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%i\n%a\n%?")
+            "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
           ("n" "capture note"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Notes")
             "* %^{prompt}\n:DATE: %U\n\n%?")
@@ -421,7 +431,7 @@ https://stackoverflow.com/questions/9663396/how-do-i-make-emacs-recognize-bash-e
           ("2" "CHM2T")
            ("2t" "capture todos"
              entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_capture.org" "Tasks")
-             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%i\n%a\n%?")
+             "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
            ("2n" "capture note"
              entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_capture.org" "Notes")
              "* %^{prompt}\n:DATE: %U\n\n%?")
@@ -847,9 +857,10 @@ https://github.com/Sarcasm/irony-mode
 
 ;(defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
+;(setq 'cperl-indent-level 2)
 
 (setq c-default-style "stroustrup"
-    c-basic-offset 4)
+    c-basic-offset 2)
 #+END_SRC
 
 *** irony
