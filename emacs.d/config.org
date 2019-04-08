@@ -332,6 +332,7 @@ I think this is not needed
 at least it is working without.
 
 #+BEGIN_SRC emacs-lisp
+(define-key global-map "\C-cc" 'org-capture) ;;; TODO ;;; is this realy needed
 ;(setq org-export-coding-system ’utf-8)
 #+END_SRC
 
@@ -347,6 +348,17 @@ As I reformat text blocks often with =M-q= a span might be split over two lines.
 But as some have trouble the link to a more [[https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode/13828][detailed answer]] of a different question is useful.
 
 Should not do it over too many lines, as otherwise it will catch math or other text.
+
+*** tags
+Setting Tags]]
+possible to type tags directly (enclosed by ::)
+
+(setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
+
+
+#+BEGIN_SRC emacs-lisp
+(setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
+#+END_SRC
 
 *** org-babel
 [[https://github.com/astahlman/ob-async][ob-async]] enables asynchronous execution of org-babel src blocks
@@ -475,10 +487,12 @@ from source code files.
 
 add description from org and mike file
 
-
+*TODO* "C" is two times in the list - is this a default?
 #+BEGIN_SRC emacs-lisp
     (add-to-list 'org-structure-template-alist
                  '("C" "#+BEGIN_COMMENT\n?\n#+END_COMMENT" ""))
+    (add-to-list 'org-structure-template-alist
+                 '("S" "#+BEGIN_SUMMARY\n?\n#+END_SUMMARY" ""))
 #+END_SRC
 
 *** my keyboard macros
@@ -489,15 +503,21 @@ https://www.emacswiki.org/emacs/KeyboardMacros
     M-x insert-kbd-macro ---> bekomme das macro als text
 
     wieder verwenden
-    Zeile obe (fset) mit eval-region "einlesen"
+    Zeile oben (fset) mit eval-region "einlesen"
     Zeike unten "interaktive" ausfuehren
     global-set-key (kbd "C-c a") 'my-macro
 #+BEGIN_SRC emacs-lisp
 (fset 'md-link2-org
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([58 115 35 92 91 92 40 46 42 92 41 92 93 40 92 40 46 42 92 41 41 35 91 91 92 50 93 91 92 49 93 93 35 return] 0 "%d")) arg)))
 ;; checked, 'm' is not defined, but there should be still a better key
+
+; change /embed/ to /watch/ and delete all after ?
+(fset 'mbb-youtube-link
+   [?I ?\[ ?\[ escape ?/ ?e ?m ?b ?e ?d return ?c ?w ?w ?a ?t ?c ?h escape ?f ?? ?C ?\] ?\[ ?y ?o ?u ?t ?u ?b ?e ?  ?v ?i ?d ?e ?o ?\] ?\] escape])
+
 ;; also, move it from global to org key table
 (global-set-key (kbd "C-c m") 'md-link2-org)
+(global-set-key (kbd "C-c n") 'mbb-youtube-link)
 #+END_SRC
 
 ** evil
@@ -901,6 +921,8 @@ needed to install clang development package
 dnf install clang-devel
 #+END_EXAMPLE
 
+on Mac mini compile failed, as /cmake/ is missing
+
 add company mode, example from [[https://jamiecollinson.com/blog/my-emacs-config/][Jamie]] (same for Zamansky 55)
 look deeper into his config, as it is nicely formatted
 #+BEGIN_SRC emacs-lisp
@@ -1244,6 +1266,8 @@ delete the current window. I’m not sure why you’d want that instead of the e
      ((t (:inherit ace-jump-face-foreground :height 3.0))))))
 #+END_SRC
 
+Looks like this /disables/ the 2/3 window handling. At this point the /active/ window is the small one
+
 *** alternatives
 =window-jump= will jump to the closest window in a particular direction (left, right, up or down).
 This is more predictable than the normal jump, but still not as /precise/ as a direct jump.
@@ -1382,6 +1406,8 @@ possible functions:
 - avy-goto-char
 - avy-goto-char-2
 - avy-goto-char-timer
+  - type as many as needed (update on the fly during delete)
+  - press return, no /timeout/ needed
 - avy-goto-line
 - avy-goto-word-1
 - avy-goto-word-0
@@ -1390,7 +1416,9 @@ possible functions:
 (use-package avy
   :ensure t
   :bind (("M-s ;" . avy-goto-word-1)
-         ("M-s '" . avy-goto-char-2)))
+         ("M-s l" . avy-goto-line)
+         ("M-s '" . avy-goto-char-2)
+         ("M-s @" . avy-goto-char-timer)))
 #+END_SRC
 * last steps
 If done at begin of script the _scrollbar_ and _fringe_ change.
@@ -1402,3 +1430,15 @@ A litter later these are bag as before. Try now as the last step of the configur
                  ;; if set to _1_ not linewraps etc are displayed
                  ;; 0 will show the _terminal_ character
 #+END_SRC
+** [[https://github.com/syohex/emacs-anzu][anzu]]
+minor mode which displays current match and total matches information in the mode-line in various search modes
+
+=anzu-query-replace-at-cursor=
+shows number of matches, *SPACE* or *y* replace, *DEL* or *n* ignore
+more see help
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :ensure t)
+#+END_SRC
+
+on =Mac mini= I had to disable it as the start-up failed some times - what was the cause?
