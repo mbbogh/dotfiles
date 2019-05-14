@@ -23,6 +23,7 @@ Plugin 'VundleVim/Vundle.vim'
 "Plugin 'Valloric/YouCompleteMe' --- looks like specific for programming languages
 "Plugin 'SirVer/ultisnips' --- more like in emacs?
 Plugin 'davidoc/taskpaper.vim'
+Plugin 'powerman/vim-plugin-AnsiEsc.git'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
