@@ -13,7 +13,7 @@ export R="\[\033[0;31m\]"    # red
 export G="\[\033[0;32m\]"    # green
 export Y="\[\033[0;33m\]"    # yellow
 export B="\[\033[0;34m\]"    # blue
-export M="\[\033[0;35m\]"    # magenta
+export M="\[\033[0;35m\]"    # magenta/purple
 export C="\[\033[0;36m\]"    # cyan
 #export W="\[\033[0;37m\]"    # white
 #

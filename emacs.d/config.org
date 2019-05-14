@@ -418,6 +418,11 @@ should change the hard coded path to a shell variable
 this could be tricky on the Mac is started via teh dock
 https://stackoverflow.com/questions/9663396/how-do-i-make-emacs-recognize-bash-environment-variables-for-compilation
 
+tried to use a path, but both didn't work
+https://emacs.stackexchange.com/questions/34558/how-can-i-get-some-environment-variables-into-init-el-to-construct-file-paths
+             entry (file+headline (format "%s/emacs_notes/lim400_capture.org" (getenv "REPOS")) "Tasks")
+             entry (file+headline (substitute-in-file-name "${REPOS}/emacs_notes/lim400_capture.org") "Tasks")
+
 add date to property from [[https://emacs.stackexchange.com/questions/26119/org-mode-adding-a-properties-drawer-to-a-capture-template][stackexchange]]
 #+BEGIN_SRC emacs-lisp
 (defun add-property-with-date-captured ()
@@ -455,6 +460,22 @@ add date to property from [[https://emacs.stackexchange.com/questions/26119/org-
              "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
            ("2E" "capture errors (JIRA)"
              entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_error.org" "jira")
+             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
+          ("4" "LIM400")
+           ("4t" "capture todos"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_capture.org" "Tasks")
+             "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
+           ("4n" "capture note"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_capture.org" "Notes")
+             "* %^{prompt}\n:DATE: %U\n\n%?")
+           ("4j" "Journal entry"
+             entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/lim400_journal.org")
+             "* %?\nEntered on %U\n  %i\n  %a")
+           ("4e" "capture errors (private)"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_error.org" "private")
+             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
+           ("4E" "capture errors (JIRA)"
+             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_error.org" "jira")
              "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
           ("c" "work CM from jira"
             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/work_cm.org" %^{prompt}))
@@ -1062,6 +1083,11 @@ Chen Bin:
     snippet. "a" for assert "l" for log and "i" for include. Other snippets are rarely used actually.
 
 #+BEGIN_SRC emacs-lisp
+(use-package yasnippet-snippets
+  :ensure t)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :ensure t
   :diminish yas-minor-mode
@@ -1442,3 +1468,29 @@ more see help
 #+END_SRC
 
 on =Mac mini= I had to disable it as the start-up failed some times - what was the cause?
+
+** test indentation highligther
+https://github.com/antonj/Highlight-Indentation-for-Emacs
+
+https://github.com/DarthFennec/highlight-indent-guides
+
+
+#+BEGIN_SRC emacs-lisp
+(use-package highlight-indent-guides
+  :ensure t
+  :config
+    (setq highlight-indent-guides-method 'character))
+
+(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+#+END_SRC
+
+** test ansi colour
+worked for foreground but background kept white
+
+#+BEGIN_SRC emacs-lisp
+(setq term-default-bg-color nil)
+(require 'ansi-color)
+(defun display-ansi-colors ()
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+#+END_SRC
