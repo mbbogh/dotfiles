@@ -520,6 +520,13 @@ https://www.emacswiki.org/emacs/KeyboardMacros
 (global-set-key (kbd "C-c n") 'mbb-youtube-link)
 #+END_SRC
 
+*** org-drill
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(require 'org-learn)
+(require 'org-drill)
+#+END_SRC
+
 ** evil
 from evil [[https://github.com/emacs-evil/evil][home page]]
 evil requires _undo tree_
@@ -533,6 +540,11 @@ not configured, did evil load it automatically from melpa?
 ;         :map evil-insert-state-map
 ;         ("M-x" . execute-extended-command))
 )
+#+END_SRC
+
+For the vim-like motions of ">>" and "<<".
+#+BEGIN_SRC emacs-lisp
+(setq-default evil-shift-width tab-width)
 #+END_SRC
 
 *** line numbers
@@ -580,6 +592,7 @@ need to be on 1st char of end tag _</_ is ignored, _<_ will even be the tag befo
   :init (global-evil-matchit-mode 1)
 )
 #+END_SRC
+
 ** dired                                                            :IN_TEST:
 #+BEGIN_SRC emacs-lisp
 (use-package dired-narrow
@@ -658,6 +671,8 @@ don't need to worry about order. This neat feature means that =foo bar= is equiv
 
 *Great for*: Using rg with Helm, especially with multiple search terms.
 *** my setup
+[[https://github.com/BurntSushi/ripgrep][ripgrep]] the =rust= search tool project. There are some /benchmarks/ and also some other nice informations.
+
 #+BEGIN_SRC emacs-lisp
 (use-package ripgrep
   :ensure t
@@ -1247,14 +1262,10 @@ https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_w
 ** [[https://github.com/abo-abo/ace-window][ace-window]]
 got it from Mike Zamansky [[http://cestlaz.github.io/posts/using-emacs-5-windows/][video 5]]
 
-*** from an irreal post
-The other day I was reading that you can change the default ace-window action before selecting the window to change to. By pressing
-m you can swap the current window with one of the others. Of course, that only works when there are three or more windows. When
-there are two windows it simply changes window focus immediately.
+with more than two window [[https://github.com/abo-abo/ace-window#change-the-action-midway][extra commands]] are possible
+like =m= to swap windows
 
-I wondered if there was a way to force one of the alternate actions so I typed Ctrl+u Ctrl+x o as an experiment. It immediately
-swapped the windows. I checked the documentation and discovered that if you type Ctrl+u twice before calling ace-window it will
-delete the current window. I’m not sure why you’d want that instead of the easier Ctrl+x k but that’s what happens.
+to swap windows if there are only two us *C-u C-x o*
 
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
@@ -1412,14 +1423,55 @@ possible functions:
 - avy-goto-word-1
 - avy-goto-word-0
 
+new with 0.5.0
+- avy-org-goto-heading-timer *try*
+- avy-org-refile-as-child
+
+#+BEGIN_QUOTE
+There are some more commands which you can explore yourself by looking at the code.
+#+END_QUOTE
+
 #+BEGIN_SRC emacs-lisp
 (use-package avy
   :ensure t
   :bind (("M-s ;" . avy-goto-word-1)
          ("M-s l" . avy-goto-line)
          ("M-s '" . avy-goto-char-2)
-         ("M-s @" . avy-goto-char-timer)))
+         ("M-s ~" . avy-goto-char-timer)))
 #+END_SRC
+
+*** New dispatch actions
+Suppose you have bound:
+
+#+BEGIN_EXAMPLE
+    (global-set-key (kbd "M-t") 'avy-goto-word-1)
+#+END_EXAMPLE
+
+and a word that starts with a "w" and is select-able with "a". Here's what you can do now:
+
+- M-t w a to jump there
+- M-t w x a - =avy-action-kill-move=: kill the word and move there,
+- M-t w X a - =avy-action-kill-stay=: kill the word without moving the point,
+- M-t w i a - =avy-action-ispell=: use ispell/flyspell to correct the word,
+- M-t w y a - =avy-action-yank=: yank the word at point,
+- M-t w t a - =avy-action-teleport=: kill the word and yank it at point,
+- M-t w z a - =avy-action-zap-to-char=: kill from point up to selected point.
+
+You can customize =avy-dispatch-alist= to modify these actions, and also ensure that there's no overlap with your =avy-keys=, if you customized them.
+
+*** Restarting an =avy= search
+Suppose you jumped to a word that starts with "a". Now you want to jump to a different word that also starts with "a". You can use =avy-resume= for this.
+
+Additionally, you can use =avy-next= and =avy-prev= to cycle between the last =avy= candidates. Here's an example hydra to facilitate it:
+
+#+BEGIN_EXAMPLE
+    (defhydra hydra-avy-cycle ()
+      ("j" avy-next "next")
+      ("k" avy-prev "prev")
+      ("q" nil "quit"))
+
+    (global-set-key (kbd "C-M-'") 'hydra-avy-cycle/body)
+#+END_EXAMPLE
 * last steps
 If done at begin of script the _scrollbar_ and _fringe_ change.
 A litter later these are bag as before. Try now as the last step of the configuration.

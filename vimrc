@@ -66,14 +66,19 @@ set expandtab
 set list
 set listchars=tab:>·,trail:·
 
-" incremenatal search
-set incsearch
-" ignore case till a upper case letter is typed
-set ignorecase
-set smartcase
+" search
+"" incremenatal search
+    set incsearch
+"" ignore case till a upper case letter is typed
+    set ignorecase
+    set smartcase
 
-"set spell
-"set spelllang=de
+" spell check
+    set spell
+    set spelllang=de
+
+" delete all trailingi white space at save
+    autocmd BufWritePre * %s#\s\+$##e
 
 " to map the alt key <ALT+k> <A-k> or <M-k>
 " it looks like it is different on many systems
@@ -93,7 +98,7 @@ vnoremap <A-c> "*y
 " :map        --- selbst erstellte
 " :map!       --- commands from insert and command mode
 " :vmap       --- every map command can be used like to display it set key
-" 
+"
 " I should read the following tutorial
 " http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
 
@@ -110,4 +115,5 @@ syntax enable
 
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_extra_conf_globlist = ['~/.vim/bundle/*','~/.ycm_confirm_extra_conf.py*']
+
 
