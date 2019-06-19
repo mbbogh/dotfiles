@@ -1,7 +1,3 @@
-[user]
-  name  = $GIT_CONFIG_NAME
-  email = $GIT_CONFIG_EMAIL
-
 [push]
   default = simple
 
@@ -11,6 +7,13 @@
   br = branch
   up = rebase
   ci = commit
+
+[diff]
+  tool = meld
+[difftool "meld"]
+  cmd = meld \"$LOCAL\" \"$REMOTE\"
+[mergetool]
+  keepBackup = true
 
 [color]
   ui = auto
