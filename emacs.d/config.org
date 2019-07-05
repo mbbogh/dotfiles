@@ -163,19 +163,56 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 (setq column-number-mode t)
 (show-paren-mode 1)
 
-(setq-default indent-tabs-mode nil)
-(setq tab-width 4) ; or any other preferred value
+(setq-default indent-tabs-mode nil) ; use space instead of tabs
+(setq tab-width 2) ; or any other preferred value
 
 (setq-default fill-column 132)
 
 (add-to-list 'auto-mode-alist '("Makefile.*" . makefile-gmake-mode))
 #+END_SRC
 
+Making Indentation Behave Sanely (Electric Indent)
+Something that was driving me nuts was Emacs electric-indent indenting the previous line when I press enter. Luckily, I came across a fix one day.
+#+BEGIN_SRC emacs-lisp
+(setq-default electric-indent-inhibit t)
+#+END_SRC
 try wraping at words and not hard at character coount
+
 not sure if this is usefull, activate only in /text/ mode?
 #+BEGIN_SRC emacs-lisp
 (setq-default word-wrap 1)
 #+END_SRC
+
+*** Highlighting Tabs and Spaces Differently
+Something that I feel that is very important to have in an editor is a way to identify spaces and tabs easily. They are both whitespace characters that can easily be confused for eachother.
+
+We will accomplish this by making tabs appear visible as a “|” (pipe) character. If you want to highlight spaces too, please refer to [[http://ergoemacs.org/emacs/whitespace-mode.html][ErgoEmacs' article on making whitespace visible]].
+
+#+BEGIN_EXAMPLE
+    (global-whitespace-mode)
+    (setq whitespace-style '(face tabs tab-mark trailing))
+    (custom-set-faces
+     '(whitespace-tab ((t (:foreground "#636363")))))
+
+    (setq whitespace-display-mappings
+      '((tab-mark 9 [124 9] [92 9])))
+#+END_EXAMPLE
+
+I have separated the =whitespace-display-mappings= portion of the snippet with a newline because it is the more confusing-to-read part of it.
+
+The first four lines of the snippet are pretty easy to understand.
+
+1. First you enable =global-whitespace-mode=. This makes our configured whitespace visible in all buffers automatically.
+2. Next, you're setting the whitespace style to show tabs and trailing whitespace. You need =face= and =tabs= included there. I am not completely sure why, but they are needed in order to set the color of the pipe character.
+3. After that, you're calling =custom-set-faces= to customize the appearance of the tab whitespace. I set the text color of our pipe character to be *#636363* which is a nice color if you're using a dark-themed Emacs theme. If you're using a light theme in Emacs, you'll want a lighter color such as *#c1c1c1*.
+
+This is an example of #636363 on a dark background. It is supposed to be subtle.
+
+This is an example of #c1c1c1 on a light background. It is supposed to be subtle.
+
+The line that is a little bit confusing to read is the one where we actually set the pipe character.
+
+All you really need to know about it is that =124= is the ascii ID of the pipe character (“|”). You can view [[http://rmhh.co.uk/ascii.html][a list of ascii character IDs here]].
 
 *** THINK [[http://pragmaticemacs.com/emacs/add-the-system-clipboard-to-the-emacs-kill-ring/][Add the system clipboard to the Emacs kill-ring]]      :READ:IN_TEST:
 #+BEGIN_QUOTE
@@ -225,17 +262,29 @@ What is the difference to /flyspell-check-previous-highlighted-word/?
 From a /flycheck/ feature reguest a got, that it is not for spell checking. On one hand it sounded reasonable, on the other how is
 running the spell check on the whole buffer different to running the compiler on a source code file?
 
+#+BEGIN_SRC emacs-lisp
+(use-package flyspell
+  :config
+  (add-hook 'text-mode-hook #'flyspell-mode)       ; looks like not working - only org?
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)) ; spellcheck comments automatically in source code 
+#+END_SRC
+
 there are two modules to work with =helm=
 - [[https://github.com/pronobis/helm-flyspell][helm-flyspell]] is helm only
 - [[https://github.com/d12frosted/flyspell-correct][flyspell-correct-helm]] which is a generic module with adapters for also pop-up, ivy, ...
 #+BEGIN_SRC emacs-lisp
-    (use-package flyspell-correct-helm
-      :ensure t
-      :after flyspell)
-;    (define-key flyspell-mode-map (kbd "C-;") 'helm-flyspell-correct)
+   (use-package flyspell-correct-helm
+     :bind ("C-M-;" . flyspell-correct-wrapper)
+     :init
+     (setq flyspell-correct-interface #'flyspell-correct-helm))
+;    (use-package flyspell-correct-helm
+;      :ensure t
+;      :after flyspell)
+;;    (define-key flyspell-mode-map (kbd "C-;") 'helm-flyspell-correct)
 #+END_SRC
 could not /find/ the function *helm-flyspell-correct*
 not sure what is going on
+*new config from the script file*
 
 ** GUI
 In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
@@ -330,6 +379,10 @@ I think this is not needed
     (require 'org-install)
 
 at least it is working without.
+#+BEGIN_COMMENT
+I think this is because I'm using the /version/ shiped with emacs.
+Should think about installing org directly, as the included version is missing some parts, like =org-drill=.
+#+END_COMMENT
 
 #+BEGIN_SRC emacs-lisp
 (define-key global-map "\C-cc" 'org-capture) ;;; TODO ;;; is this realy needed
@@ -374,9 +427,10 @@ plantUML setup from
  'org-babel-load-languages
  '(;; other Babel languages
    (C . t) ; https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-C.html
-   (shell . t)
    (plantuml . t)
    (python . t)
+   (shell . t)
+   (sql . t)
   ))
 
 ; https://emacs.stackexchange.com/questions/13107/replace-plantuml-source-with-generated-image-in-org-mode
@@ -726,6 +780,14 @@ in an old config I used: (require 'helm-config)
          ("C-x r b" . helm-bookmarks)))
 #+END_SRC
 
+Starting with emacs 26 it is possible to use popup windows, so called [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Child-Frames.html#Child-Frames][child-frames]].
+#+BEGIN_SRC emacs-lisp
+(use-package helm-posframe
+  :ensure t)
+#+END_SRC
+
+#+RESULTS:
+
 setup ripgrep to be used
 why would I need
 #+BEGIN_SRC emacs-lisp
@@ -853,7 +915,7 @@ Example, setup like this:
         '("German - English"
             "English - German")))
 #+END_SRC
-*** powerthesaurus
+*** TODO powerthesaurus
 selected word or input
 result in minibuffer, only one line, difficult to find a word
 #+BEGIN_SRC emacs-lisp
@@ -861,6 +923,15 @@ result in minibuffer, only one line, difficult to find a word
   :ensure t
   :bind (("C-c d p" . powerthesaurus-lookup-word)))
 #+END_SRC
+#+BEGIN_COMMENT
+not working May 2019, getting back a 403 Forbidden - Jun 2019 working again, author provided a fix for the API change
+
+but I still have the problem, that the /word/ the point is on is not used
+and also after the lookup, there is no word, need first to press TAB to see a selection
+should look for an other package?
+
+/mw-thesaurus.el/ also provides a definition, but uses the /new/ Merriam-Webster and also needs an account
+#+END_COMMENT
 *** define-word
 needed to enter the word, didn't use the word at point, as advertised
 #+BEGIN_SRC emacs-lisp
@@ -919,62 +990,86 @@ https://github.com/Sarcasm/irony-mode
     c-basic-offset 2)
 #+END_SRC
 
-*** irony
-#+BEGIN_COMMENT
-there a quite some hints to use /cquery= or =ccls= instead
-this should be the more modern and still developed packages - not sure about this
+*** test [[https://github.com/emacs-lsp/lsp-mode][lsp]]
+I think this is the modern way - start here
 
-Both look to be LSP baesd and ccls should have C++11 and C++17 features.
-#+END_COMMENT
-
+should use =clangd= as this is the one from the actual llvm project, see https://clang.llvm.org/extra/clangd/Installation.html
 #+BEGIN_SRC emacs-lisp
-(use-package irony
+(use-package lsp-mode
   :ensure t
-  :config
-  (add-hook 'c++-mode-hook 'irony-mode)
-  (add-hook 'c-mode-hook 'irony-mode)
-  (add-hook 'objc-mode-hook 'irony-mode)
+  :hook (c-mode . lsp)
+  :commands lsp)
 
-  ;; replace the `completion-at-point' and `complete-symbol' bindings in
-  ;; irony-mode's buffers by irony-mode's function
-  (defun my-irony-mode-hook ()
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+;; optionally
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+(use-package company-lsp
+  :ensure t
+  :commands company-lsp)
+(use-package helm-lsp
+  :ensure t
+  :commands helm-lsp-workspace-symbol)
 #+END_SRC
 
-Zamansky 55 hash only
-  ensure t
-  config
-  add-hook c++, c and irony-cdb-autosetup-compile-options
+#+RESULTS:
 
-on new Fedoray is /libclang/ missing - that why it stopped working
-needed to install clang development package
-#+BEGIN_EXAMPLE
-dnf install clang-devel
-#+END_EXAMPLE
-
-on Mac mini compile failed, as /cmake/ is missing
-
-add company mode, example from [[https://jamiecollinson.com/blog/my-emacs-config/][Jamie]] (same for Zamansky 55)
-look deeper into his config, as it is nicely formatted
-#+BEGIN_SRC emacs-lisp
-  (use-package company-irony
-    :ensure t
-    :config
-    (add-to-list 'company-backends 'company-irony))
-#+END_SRC
-
-*** tags
-some people preferred [[https://github.com/cquery-project/cquery][cquery]]/[[https://github.com/MaskRay/ccls][ccls]] over rtags - is this for /static/ code base, e.g. analysing existing code?
-#+BEGIN_SRC emacs-lisp
-(use-package rtags
-  :ensure t)
-#+END_SRC
-not sure what happened, an update of packages on t30 removed this and the flycheck-rtags package as =unused=
+;*** irony
+;#+BEGIN_COMMENT
+;there a quite some hints to use /cquery= or =ccls= instead
+;this should be the more modern and still developed packages - not sure about this
+;
+;Both look to be LSP baesd and ccls should have C++11 and C++17 features.
+;#+END_COMMENT
+;
+;#+BEGIN_SRC emacs-lisp
+;(use-package irony
+;  :ensure t
+;  :config
+;  (add-hook 'c++-mode-hook 'irony-mode)
+;  (add-hook 'c-mode-hook 'irony-mode)
+;  (add-hook 'objc-mode-hook 'irony-mode)
+;
+;  ;; replace the `completion-at-point' and `complete-symbol' bindings in
+;  ;; irony-mode's buffers by irony-mode's function
+;  (defun my-irony-mode-hook ()
+;    (define-key irony-mode-map [remap completion-at-point]
+;      'irony-completion-at-point-async)
+;    (define-key irony-mode-map [remap complete-symbol]
+;      'irony-completion-at-point-async))
+;  (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+;  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+;#+END_SRC
+;
+;Zamansky 55 hash only
+;  ensure t
+;  config
+;  add-hook c++, c and irony-cdb-autosetup-compile-options
+;
+;on new Fedoray is /libclang/ missing - that why it stopped working
+;needed to install clang development package
+;#+BEGIN_EXAMPLE
+;dnf install clang-devel
+;#+END_EXAMPLE
+;
+;on Mac mini compile failed, as /cmake/ is missing
+;
+;add company mode, example from [[https://jamiecollinson.com/blog/my-emacs-config/][Jamie]] (same for Zamansky 55)
+;look deeper into his config, as it is nicely formatted
+;#+BEGIN_SRC emacs-lisp
+;  (use-package company-irony
+;    :ensure t
+;    :config
+;    (add-to-list 'company-backends 'company-irony))
+;#+END_SRC
+;
+;*** tags
+;some people preferred [[https://github.com/cquery-project/cquery][cquery]]/[[https://github.com/MaskRay/ccls][ccls]] over rtags - is this for /static/ code base, e.g. analysing existing code?
+;#+BEGIN_SRC emacs-lisp
+;(use-package rtags
+;  :ensure t)
+;#+END_SRC
+;not sure what happened, an update of packages on t30 removed this and the flycheck-rtags package as =unused=
 ** python
 from all what I've read =elpy= is complicated to set up and only a conclomerate of existing packages
 so I was deciding between =jedi= and =anaconda=
@@ -1029,6 +1124,15 @@ Turn off automatic Flycheck syntax checking rtags does this manually.
   (add-hook 'c++-mode-hook 'my-flycheck-rtags-setup)
   (add-hook 'objc-mode-hook 'my-flycheck-rtags-setup)
 )
+#+END_SRC
+
+need to set this, depending on OS installation, as otherwise the interpreter used is /2/
+#+BEGIN_SRC emacs-lisp
+(setq python-shell-interpreter "python3")
+;;(setq python-shell-interpreter-args "-m IPython --simple-prompt -i") -- not sure for what this is needed
+(setq flycheck-python-pycompile-executable "python3"
+      flycheck-python-pylint-executable "python3"
+      flycheck-python-flake8-executable "python3")
 #+END_SRC
 ** JavaScrip
 Read before starting the setup.
