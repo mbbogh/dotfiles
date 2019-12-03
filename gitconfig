@@ -37,3 +37,4 @@
 
 [core]
   editor = vim
+  pager = $(test \"$TERM\" = \"dumb\" && echo cat || echo less)

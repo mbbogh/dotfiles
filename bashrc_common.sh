@@ -3,6 +3,7 @@ export PERL5LIB=$REPOS/workspace/perlscripts/system/
 
 alias Gnc="cd $REPOS/notes/collect/"
 alias Gwd="cd $REPOS/workspace/documentation"
+alias G64="cd $REPOS/C64"
 
 #https://stackoverflow.com/questions/103857/what-is-your-favorite-bash-prompt
 #

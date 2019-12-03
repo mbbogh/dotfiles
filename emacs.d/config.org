@@ -601,6 +601,14 @@ https://www.emacswiki.org/emacs/KeyboardMacros
 (require 'org-learn)
 (require 'org-drill)
 #+END_SRC
+*** pictures
+try [[https://github.com/abo-abo/org-download][org-download]] from abo-abo
+#+BEGIN_SRC emacs-lisp
+(use-package org-download
+  :ensure t
+  :config
+  (setq-default org-download-image-dir "./pictures"))
+#+END_SRC
 
 ** evil
 from evil [[https://github.com/emacs-evil/evil][home page]]
@@ -915,19 +923,20 @@ Example, setup like this:
         '("German - English"
             "English - German")))
 #+END_SRC
-*** TODO powerthesaurus
+*** TODO [[https://github.com/SavchenkoValeriy/emacs-powerthesaurus][powerthesaurus]]
 selected word or input
 result in minibuffer, only one line, difficult to find a word
+the original word will be replaced
 #+BEGIN_SRC emacs-lisp
 (use-package powerthesaurus
   :ensure t
-  :bind (("C-c d p" . powerthesaurus-lookup-word)))
+  :bind (("C-c d p" . powerthesaurus-lookup-word-at-point)))
 #+END_SRC
 #+BEGIN_COMMENT
 not working May 2019, getting back a 403 Forbidden - Jun 2019 working again, author provided a fix for the API change
 
 but I still have the problem, that the /word/ the point is on is not used
-and also after the lookup, there is no word, need first to press TAB to see a selection
+and also after the lookup, there is no word, *need first to press TAB to see a selection*
 should look for an other package?
 
 /mw-thesaurus.el/ also provides a definition, but uses the /new/ Merriam-Webster and also needs an account
@@ -1164,6 +1173,24 @@ looks like it doesn't work - dell after reboot
 
 #+RESULTS:
 
+** YAML
+use [[https://github.com/yoshiki/yaml-mode][yaml-mode]]
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode
+  :ensure t)
+#+END_SRC
+
+use [[https://github.com/krzysztof-magosa/flycheck-yamllint/blob/c2b273d84f15bd03464d6722391e595d7c179a5c/flycheck-yamllint.el][flycheck yamllint]] and used there /use-package/ example
+in fedora installed yamllint via dnf - otherwise use pip
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck-yamllint
+  :ensure t
+  :defer t
+  :init
+  (progn
+    (eval-after-load 'flycheck
+      '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
+#+END_SRC
 * test
 ** [[https://github.com/alpha22jp/atomic-chrome][atomic chrome]]
 #+BEGIN_SRC emacs-lisp
@@ -1222,32 +1249,6 @@ Chen Bin:
 *** [[https://github.com/AndreaCrotti/yasnippet-snippets][examples/defaults in own repo]]
 check which ones to use
 
-** golden ratio
-
-Was talked about in one of the hangouts.
-The split window will not be 50/50, but the active one will be 2/3.
-
-#+BEGIN_SRC emacs-lisp
-(use-package golden-ratio
-  :ensure t
-  :diminish golden-ratio-mode
-  :init
-  (golden-ratio-mode 1)
-  (setq golden-ratio-auto-scale t)
-  (add-to-list 'golden-ratio-extra-commands 'ace-window))
-#+END_SRC
-
-*** configuration history
-disabled it, as often the windows don't change with 'C-x b' but only if I click into it
-is this due ace-window? Yes!
-
-Someone had the same problem with =window-jump=, and coded a solution with /add-advice/. But one [[https://www.reddit.com/r/emacs/comments/acgrw4/how_i_used_advice_to_make_windowjump_and/ed7vmyf][comment]] had a simple solution for =ace-window=.
-
-#+BEGIN_EXAMPLE
-(add-to-list 'golden-ratio-extra-commands 'ace-window)
-#+END_EXAMPLE
-
-With this added all works as advertised.
 ** missing
 *** from VB LXDE
 Should check if the jedi/autocomplete configuration conflict with one of the other now used projects.
@@ -1569,6 +1570,29 @@ There are some more commands which you can explore yourself by looking at the co
          ("M-s '" . avy-goto-char-2)
          ("M-s ~" . avy-goto-char-timer)))
 #+END_SRC
+
+** mpv
+#+BEGIN_SRC emacs-lisp
+(org-add-link-type "mpv" #'mpv-play)
+(defun org-mpv-complete-link (&optional arg)
+  (replace-regexp-in-string
+   "file:" "mpv:"
+   (org-file-complete-link arg)
+   t t))
+(add-hook 'org-open-at-point-functions #'mpv-seek-to-position-at-point)
+
+(defun org-timer-item--mpv-insert-playback-position (fun &rest args)
+  "When no org timer is running but mpv is alive, insert playback position."
+  (if (and
+       (not org-timer-start-time)
+       (mpv-live-p))
+      (mpv-insert-playback-position t)
+    (apply fun args)))
+(advice-add 'org-timer-item :around
+            #'org-timer-item--mpv-insert-playback-position)
+#+END_SRC
+
+#+RESULTS:
 
 *** New dispatch actions
 Suppose you have bound:
