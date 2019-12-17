@@ -109,7 +109,7 @@ lines also please checkdoc, the elisp documentation checker.
 Switch on debugging, in case.
 
 #+begin_src emacs-lisp
-(setq debug-on-error t)
+;(setq debug-on-error t)
 #+end_src
 
 * package support
@@ -121,12 +121,27 @@ Use not only the default package source but also melpa.
     Should /package-initialize/ be before or after melpa is added to the archive list?
 
 #+BEGIN_SRC emacs-lisp
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-
-(package-refresh-contents)
+;(require 'package)
+;(setq package-enable-at-startup nil)
+;(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+;(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
+;
+;; from org malual
+;;(unless package-archive-contents    ;; Refresh the packages descriptions
+;;  (package-refresh-contents))
+;;(setq package-load-list '(all))     ;; List of packages to load
+;;(unless (package-installed-p 'org)  ;; Make sure the Org package is
+;;  (package-install 'org))           ;; installed, install it if not
+;;(package-initialize)                ;; Initialize & Install Package
+;
+;
+;
+;
+;(package-initialize)
+;
+;(package-refresh-contents)
+;(when (not package-archive-contents)
+;    (package-refresh-contents))
 #+END_SRC
 
 ** use-package
@@ -266,7 +281,7 @@ running the spell check on the whole buffer different to running the compiler on
 (use-package flyspell
   :config
   (add-hook 'text-mode-hook #'flyspell-mode)       ; looks like not working - only org?
-  (add-hook 'prog-mode-hook #'flyspell-prog-mode)) ; spellcheck comments automatically in source code 
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)) ; spellcheck comments automatically in source code
 #+END_SRC
 
 there are two modules to work with =helm=
@@ -597,8 +612,13 @@ https://www.emacswiki.org/emacs/KeyboardMacros
 
 *** org-drill
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+;(add-to-list 'load-path "~/.emacs.d/lisp/")
 (require 'org-learn)
+;(require 'org-drill)
+
+;(use-package org-drill
+;  :ensure t
+;  :config)
 (require 'org-drill)
 #+END_SRC
 *** pictures
