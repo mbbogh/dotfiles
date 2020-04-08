@@ -2,16 +2,21 @@
 ; via https://irreal.org/blog/?p=8243 --- didn't work the 1st time I tested it, do I need to update gnutls?
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
+; TODO still not sure what caused my problem and why with this changes it works (different)
 ; Configure package.el to include MELPA.
 ; moved this over from config.org to be able to use org from repo, not build in
 (require 'package)
+;(setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq load-prefer-newer t)
-(package-initialize)
 
-
-
+(package-initialize)                ;; Initialize & Install Package
+(unless package-archive-contents    ;; Refresh the packages descriptions
+  (package-refresh-contents))
+;(setq package-load-list '(all))     ;; List of packages to load
+;(unless (package-installed-p 'org)  ;; Make sure the Org package is
+;  (package-install 'org))           ;; installed, install it if not
 
 ; prevent Emacs's Easy Customization Interface from writing (custom-set-variables ... into your init file
 ;(setq custom-file "~/.emacs.d/custom.el")
@@ -24,5 +29,7 @@
 ;(when (file-exists-p init-local-file)
 ;  (load init-local-file))
 
+(require 'org)
 (org-babel-load-file (expand-file-name "config.org" user-emacs-directory))
 (put 'scroll-left 'disabled nil)
+(put 'narrow-to-region 'disabled nil)

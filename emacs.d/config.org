@@ -81,6 +81,8 @@ https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
 https://github.com/jwiegley/use-package
     this is the description for /use-package/
 
+a [[https://github.com/caisah/emacs.dz][list]] with many emacs configurations
+
 * TODO look deeper into this
 git this from: https://github.com/marcowahl/.emacs.d
 ** - first line of the tangle
@@ -112,38 +114,9 @@ Switch on debugging, in case.
 ;(setq debug-on-error t)
 #+end_src
 
+Next time I should try out [[https://github.com/Malabarba/elisp-bug-hunter][bug hunter]] to check the configuration before the restart.
+
 * package support
-
-Use not only the default package source but also melpa.
-
-** melpa
-
-    Should /package-initialize/ be before or after melpa is added to the archive list?
-
-#+BEGIN_SRC emacs-lisp
-;(require 'package)
-;(setq package-enable-at-startup nil)
-;(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-;(add-to-list 'package-archives'("melpa" . "https://melpa.org/packages/") t)
-;
-;; from org malual
-;;(unless package-archive-contents    ;; Refresh the packages descriptions
-;;  (package-refresh-contents))
-;;(setq package-load-list '(all))     ;; List of packages to load
-;;(unless (package-installed-p 'org)  ;; Make sure the Org package is
-;;  (package-install 'org))           ;; installed, install it if not
-;;(package-initialize)                ;; Initialize & Install Package
-;
-;
-;
-;
-;(package-initialize)
-;
-;(package-refresh-contents)
-;(when (not package-archive-contents)
-;    (package-refresh-contents))
-#+END_SRC
-
 ** use-package
 
 Looks like this is the simplest way to instal and configure packages.
@@ -391,7 +364,14 @@ don't think this worked - do another test
 
 I think this is not needed
 
-    (require 'org-install)
+#+BEGIN_SRC emacs-lisp
+(require 'org-tempo)
+;    (require 'org-install)
+
+;(use-package org-plus-contrib
+;  :ensure t
+;  :config)
+#+END_SRC
 
 at least it is working without.
 #+BEGIN_COMMENT
@@ -442,6 +422,7 @@ plantUML setup from
  'org-babel-load-languages
  '(;; other Babel languages
    (C . t) ; https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-C.html
+   (ledger . t)
    (plantuml . t)
    (python . t)
    (shell . t)
@@ -502,55 +483,51 @@ add date to property from [[https://emacs.stackexchange.com/questions/26119/org-
 (add-hook 'org-capture-before-finalize-hook 'add-property-with-date-captured)
 #+END_SRC
 
+still no completely working
+https://emacs.stackexchange.com/questions/550/exec-path-and-path
+https://stackoverflow.com/questions/135688/setting-environment-variables-on-os-x
+
+Needed to change the ='= of setq 2nd parameter to =`= (backquote) and add the =,= in front of the function to generate the path.
+With the old configuration I always got the error message, that the path was =nil=.
+
+Still not sure what exactly is the difference. Should read up about this in the lisp manual.
+Also look at =runx_emacs=. There I'm collected some of the notes I used to fix the problem.
+
 #+BEGIN_SRC emacs-lisp
 (define-key global-map "\C-cc" 'org-capture)
 (setq org-capture-templates
-        '(("t" "capture todos"
-            entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Tasks")
+        `(("t" "capture todos"
+            entry (file+headline ,(concat (getenv "REPOS") "/notes/capture/capture.org") "Tasks")
             "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
           ("n" "capture note"
-            entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/capture.org" "Notes")
-            "* %^{prompt}\n:DATE: %U\n\n%?")
+            entry (file+headline ,(substitute-in-file-name "${REPOS}/notes/capture/capture.org") "Notes")
+            "* %^{prompt}\n%?")
           ("j" "Journal entry"
-            entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/journal.org")
-            "* %?\nEntered on %U\n  %i\n  %a")
+            entry (file+datetree ,(concat (getenv "REPOS") "/notes/capture/journal.org"))
+            "* %?\n")
+          ("d" "datenabgleich"
+            entry (file+datetree ,(concat (getenv "REPOS") "/notes/capture/datenabgleich.org"))
+            "* %?\n")
           ("2" "CHM2T")
            ("2t" "capture todos"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_capture.org" "Tasks")
+             entry (file+headline ,(concat (getenv "REPOS") "/emacs_notes/chm2t_capture.org") "Tasks")
              "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
-           ("2n" "capture note"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_capture.org" "Notes")
-             "* %^{prompt}\n:DATE: %U\n\n%?")
            ("2j" "Journal entry"
-             entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_journal.org")
+             entry (file+datetree ,(concat (getenv "REPOS") "/emacs_notes/chm2t_journal.org"))
              "* %?\nEntered on %U\n  %i\n  %a")
-           ("2e" "capture errors (private)"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_error.org" "private")
-             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
-           ("2E" "capture errors (JIRA)"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/chm2t_error.org" "jira")
-             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
-          ("4" "LIM400")
-           ("4t" "capture todos"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_capture.org" "Tasks")
-             "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
-           ("4n" "capture note"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_capture.org" "Notes")
-             "* %^{prompt}\n:DATE: %U\n\n%?")
-           ("4j" "Journal entry"
-             entry (file+datetree "/media/sf_E_DRIVE/repos/emacs_notes/lim400_journal.org")
-             "* %?\nEntered on %U\n  %i\n  %a")
-           ("4e" "capture errors (private)"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_error.org" "private")
-             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
-           ("4E" "capture errors (JIRA)"
-             entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/lim400_error.org" "jira")
-             "* TODO %^{prompt}\n:DATE: %U\n:TAGS: %^g\n%?")
-          ("c" "work CM from jira"
-            entry (file+headline "/media/sf_E_DRIVE/repos/emacs_notes/work_cm.org" %^{prompt}))
           ("s" "code snippet"
             entry (file "/tmp/snippets.org")
             "* %?\n%(my/org-capture-code-snippet \"%F\")")
+          ("6" "C64")
+           ("6t" "capture todos"
+             entry (file+headline ,(concat (getenv "REPOS") "/C64/capture.org") "Tasks")
+             "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
+           ("6n" "capture note"
+             entry (file+headline ,(concat (getenv "REPOS") "/C64/capture.org") "Notes")
+             "* %^{prompt}\n%?")
+           ("6j" "Journal entry"
+             entry (file+datetree ,(concat (getenv "REPOS") "/C64/journal.org"))
+             "* %?\n%i\n  %a")
          )
 )
 #+END_SRC
@@ -575,14 +552,11 @@ from source code files.
          (format "%s file: %s : %s >>%s<<" b f a file-name)))
 #+END_SRC
 
-add description from org and mike file
-
-*TODO* "C" is two times in the list - is this a default?
+/structure template expansion/ changed in 9.2 and needs adaption as it is incompatible with older version ([[https://orgmode.org/Changes_old.html][see change log]])
+also read https://orgmode.org/Changes.html
 #+BEGIN_SRC emacs-lisp
-    (add-to-list 'org-structure-template-alist
-                 '("C" "#+BEGIN_COMMENT\n?\n#+END_COMMENT" ""))
-    (add-to-list 'org-structure-template-alist
-                 '("S" "#+BEGIN_SUMMARY\n?\n#+END_SUMMARY" ""))
+(add-to-list 'org-structure-template-alist
+    '("S" . "summary"))
 #+END_SRC
 
 *** my keyboard macros
@@ -1249,11 +1223,6 @@ Chen Bin:
     snippet. "a" for assert "l" for log and "i" for include. Other snippets are rarely used actually.
 
 #+BEGIN_SRC emacs-lisp
-(use-package yasnippet-snippets
-  :ensure t)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :ensure t
   :diminish yas-minor-mode
@@ -1470,7 +1439,7 @@ Create own cheatsheet from:
 - [Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
 - [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 
-Started with _Sacha_  [[https://www.reddit.com/r/emacs/comments/5jvr5i/is_it_possible_to_realtime_preview_markdown_in/][Is it possible to real-time preview markdown in Emacs]] 
+Started with _Sacha_  [[https://www.reddit.com/r/emacs/comments/5jvr5i/is_it_possible_to_realtime_preview_markdown_in/][Is it possible to real-time preview markdown in Emacs]]
 One recommendation there was [[https://github.com/mola-T/flymd][flymd]] on [[http://wikemacs.org/wiki/Markdown#Live_preview_as_you_type][wikiemacs]]
 *** flymd
 runs javascript from _rawgit.com_
@@ -1694,3 +1663,31 @@ worked for foreground but background kept white
   (interactive)
   (ansi-color-apply-on-region (point-min) (point-max)))
 #+END_SRC
+** [[https://github.com/skeeto/elfeed][elfeed]]
+try with youtube subscriptions
+
+#+BEGIN_SRC emacs-lisp
+(setq elfeed-db-directory "~/repos/databases/elfeeddb")
+(setq elfeed-feeds
+      '("http://www.50ply.com/atom.xml"
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCcTt3O4_IW5gnA0c58eXshg"
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UClrMJRlvoyoWsVlB-7c61PQ"))
+(use-package elfeed
+  :ensure t)
+#+END_SRC
+** PDF-Tools
+https://github.com/politza/pdf-tools
+https://emacs.stackexchange.com/questions/13314/install-pdf-tools-on-emacs-macosx
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :ensure t
+  :config
+  (custom-set-variables
+    '(pdf-tools-handle-upgrades nil)) ; Use brew upgrade pdf-tools instead.
+  (setq pdf-info-epdfinfo-program "/usr/local/bin/epdfinfo"))
+(pdf-tools-install)
+#+end_src
+** ledger
+Had tried =hledger-mode=, but never got it working properly.
+Also it has /rupee/ in function names and the /sign/ is pre-amount.
+
