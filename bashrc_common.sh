@@ -1,12 +1,3 @@
-export PATH=~/bin:$PATH
-export PERL5LIB=$REPOS/workspace/perlscripts/system/
-
-alias Gnc="cd $REPOS/notes/collect/"
-alias Gwd="cd $REPOS/workspace/documentation"
-alias G64="cd $REPOS/C64"
-
-alias sdcv="sdcv --color"
-
 #https://stackoverflow.com/questions/103857/what-is-your-favorite-bash-prompt
 #
 export FG="\[\033[0m\]"    # unsets color to term's fg color

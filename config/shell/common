@@ -1,0 +1,16 @@
+if [ $( uname ) != "Darwin" ]; then
+  export PATH=~/bin:$PATH
+  # these exports are set via launchctl to be available also in GUI applications
+  export REPOS=~/repos
+  export PERL5LIB=$REPOS/workspace/perlscripts/system/
+
+  export LANG=en_GB.UTF-8
+  export LC_TIME=de_DE.UTF-8
+else
+  # TODO need to check with Linux
+  #export STARDICT_DATA_DIR=/usr/local/share/stardict
+  #export PATH_0006='/Volumes/data/0006'
+  # for PDF-Tools
+  # https://github.com/politza/pdf-tools
+  #export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig
+fi

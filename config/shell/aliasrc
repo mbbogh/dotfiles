@@ -1,0 +1,12 @@
+alias ll='ls -l'
+alias la='ls -al'
+
+alias Gnc="cd $REPOS/notes/collect/"
+alias Gwd="cd $REPOS/workspace/documentation"
+alias G64="cd $REPOS/C64"
+
+alias sdcv="sdcv --color"
+
+# macOS
+alias ect='/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -t'
+alias ]=open
