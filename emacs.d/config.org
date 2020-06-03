@@ -85,7 +85,7 @@ a [[https://github.com/caisah/emacs.dz][list]] with many emacs configurations
 
 * TODO look deeper into this
 git this from: https://github.com/marcowahl/.emacs.d
-** - first line of the tangle
+** first line of the tangle
 #+begin_src emacs-lisp :comments none
 ;;; init.el --- personal emacs config file -*- lexical-binding: t ; eval: (view-mode 1)-*-
 #+end_src
@@ -93,7 +93,7 @@ git this from: https://github.com/marcowahl/.emacs.d
 Set to read-only to make edits harder.  Recall that the tangled file
 is not supposed to be edited.
 
-** - conform to el-tradition
+** conform to el-tradition
 The following lines are traditionally in every elisp file.  These
 lines also please checkdoc, the elisp documentation checker.
 
@@ -107,7 +107,7 @@ lines also please checkdoc, the elisp documentation checker.
 ;;; Code:
 #+end_src
 
-** - debugging
+** debugging
 Switch on debugging, in case.
 
 #+begin_src emacs-lisp
@@ -116,6 +116,11 @@ Switch on debugging, in case.
 
 Next time I should try out [[https://github.com/Malabarba/elisp-bug-hunter][bug hunter]] to check the configuration before the restart.
 
+** TODO binding keys
+should move over all =bind-key= to [[https://github.com/jwiegley/use-package/blob/master/bind-key.el][bind-key]] (:bind in use-package)
+this enables me to very easy see all the changes with =describe-personal-keybindings=
+
+should start with =evil-numbers=
 * package support
 ** use-package
 
@@ -126,13 +131,13 @@ Looks like this is the simplest way to instal and configure packages.
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
+(setq use-package-always-ensure t)
 #+END_SRC
 
 The /use-package/keyword /:diminish/ requires [[https://github.com/myrjola/diminish.el][diminish]] to be installed.
 *do not display selected minor modes*
 #+BEGIN_SRC emacs-lisp
-(use-package diminish
-  :ensure t)
+(use-package diminish)
 #+END_SRC
 
 *** TODO defer
@@ -266,7 +271,6 @@ there are two modules to work with =helm=
      :init
      (setq flyspell-correct-interface #'flyspell-correct-helm))
 ;    (use-package flyspell-correct-helm
-;      :ensure t
 ;      :after flyspell)
 ;;    (define-key flyspell-mode-map (kbd "C-;") 'helm-flyspell-correct)
 #+END_SRC
@@ -369,7 +373,6 @@ I think this is not needed
 ;    (require 'org-install)
 
 ;(use-package org-plus-contrib
-;  :ensure t
 ;  :config)
 #+END_SRC
 
@@ -591,7 +594,6 @@ https://www.emacswiki.org/emacs/KeyboardMacros
 ;(require 'org-drill)
 
 ;(use-package org-drill
-;  :ensure t
 ;  :config)
 (require 'org-drill)
 #+END_SRC
@@ -599,7 +601,6 @@ https://www.emacswiki.org/emacs/KeyboardMacros
 try [[https://github.com/abo-abo/org-download][org-download]] from abo-abo
 #+BEGIN_SRC emacs-lisp
 (use-package org-download
-  :ensure t
   :config
   (setq-default org-download-image-dir "./pictures"))
 #+END_SRC
@@ -611,7 +612,6 @@ not configured, did evil load it automatically from melpa?
 
 #+BEGIN_SRC emacs-lisp
 (use-package evil
-  :ensure t
   :init (evil-mode 1)
 ;  :bind (("M-x" . smex) search function not only from the start, but the middle - didn't use that feature
 ;         :map evil-insert-state-map
@@ -638,7 +638,6 @@ In vim C-a and C-x are used. I think I shouldn't use C-x.
 Start using the =default= C-+ and C--, but only in =normal= mode, as it is the default for =org table sum/substract=.
 #+BEGIN_SRC emacs-lisp
 (use-package evil-numbers
-  :ensure t
   :config
     (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
     (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
@@ -649,8 +648,7 @@ Start using the =default= C-+ and C--, but only in =normal= mode, as it is the d
 cicles throug different cases
 dossent find word borders, needs to be already in one of the different spellings
 #+BEGIN_SRC emacs-lisp
-(use-package evil-string-inflection
-    :ensure t)
+(use-package evil-string-inflection)
 #+END_SRC
 
 *** evil-matchit
@@ -665,15 +663,19 @@ jumps behind _>_ if there is an open tag, it will jump to this end tag, if it is
 need to be on 1st char of end tag _</_ is ignored, _<_ will even be the tag before
 #+BEGIN_SRC emacs-lisp
 (use-package evil-matchit
-  :ensure t
   :init (global-evil-matchit-mode 1)
 )
 #+END_SRC
 
+*** TODO org
+https://github.com/GuiltyDolphin/org-evil
+
+#+begin_src emacs-lisp
+(use-package org-evil)
+#+end_src
 ** dired                                                            :IN_TEST:
 #+BEGIN_SRC emacs-lisp
 (use-package dired-narrow
-  :ensure t
   :bind (:map dired-mode-map
               ("/" . dired-narrow)))
 #+END_SRC
@@ -686,7 +688,6 @@ Not sure what key to use. Looks like most use /C-x g/.
 This key, like /C-c g/ was not used on my setup.
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-  :ensure t
   :bind (("C-x g" . magit-status)))
 #+END_SRC
 
@@ -699,7 +700,6 @@ part of a git repo.
 Had a look at the [[https://www.projectile.mx/en/latest/usage/][documentation]] and tested some commands, but nothing /stuck/ so far.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
-  :ensure t
   :init
     (projectile-global-mode)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -752,7 +752,6 @@ don't need to worry about order. This neat feature means that =foo bar= is equiv
 
 #+BEGIN_SRC emacs-lisp
 (use-package ripgrep
-  :ensure t
   :after projectile)
 #+END_SRC
 
@@ -777,15 +776,13 @@ in an old config I used: (require 'helm-config)
 
 #+BEGIN_SRC emacs-lisp
 (use-package helm
-  :ensure t
   :bind (("C-x b" . helm-buffers-list)
          ("C-x r b" . helm-bookmarks)))
 #+END_SRC
 
 Starting with emacs 26 it is possible to use popup windows, so called [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Child-Frames.html#Child-Frames][child-frames]].
 #+BEGIN_SRC emacs-lisp
-(use-package helm-posframe
-  :ensure t)
+(use-package helm-posframe)
 #+END_SRC
 
 #+RESULTS:
@@ -906,7 +903,6 @@ Example, setup like this:
 
 #+BEGIN_SRC emacs-lisp
 (use-package sdcv
-  :ensure t
   :bind (("C-c d a" . sdcv-search-input)
          ("C-c d b" . sdcv-search-pointer+))
   :config
@@ -923,7 +919,6 @@ result in minibuffer, only one line, difficult to find a word
 the original word will be replaced
 #+BEGIN_SRC emacs-lisp
 (use-package powerthesaurus
-  :ensure t
   :bind (("C-c d p" . powerthesaurus-lookup-word-at-point)))
 #+END_SRC
 #+BEGIN_COMMENT
@@ -939,7 +934,6 @@ should look for an other package?
 needed to enter the word, didn't use the word at point, as advertised
 #+BEGIN_SRC emacs-lisp
 (use-package define-word
-  :ensure t
   :bind (("C-c d d" . define-word)))
 #+END_SRC
 
@@ -973,8 +967,7 @@ Following [[http://pragmaticemacs.com/emacs/comment-boxes/][Ben Maughan]] to the
 *** [[https://gitlab.com/jgkamat/rmsbolt][RMSbolt]]
 
 #+BEGIN_SRC emacs-lisp
-(use-package rmsbolt
-  :ensure t)
+(use-package rmsbolt)
 #+END_SRC
 
 ** C/C++
@@ -999,19 +992,15 @@ I think this is the modern way - start here
 should use =clangd= as this is the one from the actual llvm project, see https://clang.llvm.org/extra/clangd/Installation.html
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
-  :ensure t
   :hook (c-mode . lsp)
   :commands lsp)
 
 ;; optionally
 (use-package lsp-ui
-  :ensure t
   :commands lsp-ui-mode)
 (use-package company-lsp
-  :ensure t
   :commands company-lsp)
 (use-package helm-lsp
-  :ensure t
   :commands helm-lsp-workspace-symbol)
 #+END_SRC
 
@@ -1027,7 +1016,6 @@ should use =clangd= as this is the one from the actual llvm project, see https:/
 ;
 ;#+BEGIN_SRC emacs-lisp
 ;(use-package irony
-;  :ensure t
 ;  :config
 ;  (add-hook 'c++-mode-hook 'irony-mode)
 ;  (add-hook 'c-mode-hook 'irony-mode)
@@ -1061,7 +1049,6 @@ should use =clangd= as this is the one from the actual llvm project, see https:/
 ;look deeper into his config, as it is nicely formatted
 ;#+BEGIN_SRC emacs-lisp
 ;  (use-package company-irony
-;    :ensure t
 ;    :config
 ;    (add-to-list 'company-backends 'company-irony))
 ;#+END_SRC
@@ -1069,8 +1056,7 @@ should use =clangd= as this is the one from the actual llvm project, see https:/
 ;*** tags
 ;some people preferred [[https://github.com/cquery-project/cquery][cquery]]/[[https://github.com/MaskRay/ccls][ccls]] over rtags - is this for /static/ code base, e.g. analysing existing code?
 ;#+BEGIN_SRC emacs-lisp
-;(use-package rtags
-;  :ensure t)
+;(use-package rtags)
 ;#+END_SRC
 ;not sure what happened, an update of packages on t30 removed this and the flycheck-rtags package as =unused=
 ** python
@@ -1084,7 +1070,6 @@ https://lists.gnu.org/archive/html/help-gnu-emacs/2015-04/msg00267.html
 #+BEGIN_SRC emacs-lisp
   ; https://github.com/proofit404/anaconda-mode
   (use-package anaconda-mode
-    :ensure t
     :config
     (add-hook 'python-mode-hook 'anaconda-mode)
     (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
@@ -1093,7 +1078,6 @@ https://lists.gnu.org/archive/html/help-gnu-emacs/2015-04/msg00267.html
 
   ; https://github.com/proofit404/company-anaconda
   (use-package company-anaconda
-    :ensure t
     :config
     (add-to-list 'company-backends 'company-anaconda))
 #+END_SRC
@@ -1104,7 +1088,6 @@ http://melpa.org/#/flycheck
 
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
-  :ensure t
   :config
   (global-flycheck-mode t))
 #+END_SRC
@@ -1116,7 +1099,6 @@ Turn off automatic Flycheck syntax checking rtags does this manually.
 #+END_QUOTE
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck-rtags
-  :ensure t
   :config
   (defun my-flycheck-rtags-setup ()
     "Configure flycheck-rtags for better experience."
@@ -1170,15 +1152,13 @@ looks like it doesn't work - dell after reboot
 ** YAML
 use [[https://github.com/yoshiki/yaml-mode][yaml-mode]]
 #+BEGIN_SRC emacs-lisp
-(use-package yaml-mode
-  :ensure t)
+(use-package yaml-mode)
 #+END_SRC
 
 use [[https://github.com/krzysztof-magosa/flycheck-yamllint/blob/c2b273d84f15bd03464d6722391e595d7c179a5c/flycheck-yamllint.el][flycheck yamllint]] and used there /use-package/ example
 in fedora installed yamllint via dnf - otherwise use pip
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck-yamllint
-  :ensure t
   :defer t
   :init
   (progn
@@ -1188,8 +1168,7 @@ in fedora installed yamllint via dnf - otherwise use pip
 * test
 ** [[https://github.com/alpha22jp/atomic-chrome][atomic chrome]]
 #+BEGIN_SRC emacs-lisp
-(use-package atomic-chrome
-    :ensure t)
+(use-package atomic-chrome)
 (atomic-chrome-start-server)
 #+END_SRC
 
@@ -1224,7 +1203,6 @@ Chen Bin:
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
-  :ensure t
   :diminish yas-minor-mode
   :init
     (setq yas-snippet-dirs
@@ -1318,7 +1296,6 @@ Read all his other instructions.
 
 #+BEGIN_SRC emacs-lisp
 (use-package helm-gtags
-  :ensure t
   :init
   (custom-set-variables
     '(helm-gtags-path-style 'relative)
@@ -1359,8 +1336,7 @@ didn't work, get void :map
    didn't use this feature in eclipse
    it still looks /as bad/ as some years ago
 #+BEGIN_SRC emacs-lisp
-;(use-package sr-speedbar
-;  :ensure t)
+;(use-package sr-speedbar)
 #+END_SRC
 
 ** auto complete
@@ -1372,7 +1348,6 @@ https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_w
 
 #+BEGIN_SRC emacs-lisp
   (use-package company
-    :ensure t
     :init
     (add-hook 'after-init-hook 'global-company-mode)
     (setq company-show-numbers t) ; press M-nthDigit to select
@@ -1389,7 +1364,6 @@ to swap windows if there are only two us *C-u C-x o*
 
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
-  :ensure t
   :init
   (global-set-key [remap other-window] 'ace-window)
   (custom-set-faces
@@ -1406,23 +1380,18 @@ This is more predictable than the normal jump, but still not as /precise/ as a d
 http://immerrr.github.io/lua-mode/
 
 #+BEGIN_SRC emacs-lisp
-(use-package lua-mode
-  :ensure t)
+(use-package lua-mode)
 #+END_SRC
 
 ** using emacs
 *** 1
 
 #+BEGIN_SRC emacs-lisp
-
-(use-package try
-	:ensure t)
+(use-package try)
 
 (use-package which-key
-	:ensure t
-	:config
-	(which-key-mode))
-
+  :config
+  (which-key-mode))
 #+END_SRC
 
 *** expand region
@@ -1430,7 +1399,6 @@ http://immerrr.github.io/lua-mode/
     does this work with eval mode?
     #+BEGIN_SRC emacs-lisp
       (use-package expand-region
-        :ensure t
         :config
         (global-set-key (kbd "C-=") 'er/expand-region))
     #+END_SRC
@@ -1446,8 +1414,7 @@ runs javascript from _rawgit.com_
 update only after file is saved
 working only with _firefox_
 #+BEGIN_SRC emacs-lisp
-;;(use-package flymd
-;;	:ensure t)
+;(use-package flymd)
 #+END_SRC
 
 *** [[http://jblevins.org/projects/markdown-mode/][markdown mode]]
@@ -1460,7 +1427,6 @@ default key shortcut C-c C-x C-i ist not working
 
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
-  :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -1480,8 +1446,7 @@ https://github.com/bddean/emacs-ereader
 mit org-mode und annotations
 
 #+BEGIN_SRC emacs-lisp
-(use-package ereader
-  :ensure t)
+(use-package ereader)
 #+END_SRC
 ** THINK evil-expat
 
@@ -1528,8 +1493,7 @@ name a workspace, and that name then appears in the modeline instead of the work
 ** [[https://github.com/Wilfred/helpful][helpful]]
 got this from /sacha 20181217/
 #+BEGIN_SRC emacs-lisp
-(use-package helpful
-  :ensure t)
+(use-package helpful)
 #+END_SRC
 ** [[https://github.com/abo-abo/avy][avy]]
 looks better than [[https://github.com/winterTTr/ace-jump-mode][ace jump]] - didn't find a comparision, but lately more are using ace
@@ -1553,7 +1517,6 @@ There are some more commands which you can explore yourself by looking at the co
 
 #+BEGIN_SRC emacs-lisp
 (use-package avy
-  :ensure t
   :bind (("M-s ;" . avy-goto-word-1)
          ("M-s l" . avy-goto-line)
          ("M-s '" . avy-goto-char-2)
@@ -1632,8 +1595,7 @@ minor mode which displays current match and total matches information in the mod
 shows number of matches, *SPACE* or *y* replace, *DEL* or *n* ignore
 more see help
 #+BEGIN_SRC emacs-lisp
-(use-package anzu
-  :ensure t)
+(use-package anzu)
 #+END_SRC
 
 on =Mac mini= I had to disable it as the start-up failed some times - what was the cause?
@@ -1646,7 +1608,6 @@ https://github.com/DarthFennec/highlight-indent-guides
 
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-indent-guides
-  :ensure t
   :config
     (setq highlight-indent-guides-method 'character))
 
@@ -1672,15 +1633,13 @@ try with youtube subscriptions
       '("http://www.50ply.com/atom.xml"
         "https://www.youtube.com/feeds/videos.xml?channel_id=UCcTt3O4_IW5gnA0c58eXshg"
         "https://www.youtube.com/feeds/videos.xml?channel_id=UClrMJRlvoyoWsVlB-7c61PQ"))
-(use-package elfeed
-  :ensure t)
+(use-package elfeed)
 #+END_SRC
 ** PDF-Tools
 https://github.com/politza/pdf-tools
 https://emacs.stackexchange.com/questions/13314/install-pdf-tools-on-emacs-macosx
 #+begin_src emacs-lisp
 (use-package pdf-tools
-  :ensure t
   :config
   (custom-set-variables
     '(pdf-tools-handle-upgrades nil)) ; Use brew upgrade pdf-tools instead.
