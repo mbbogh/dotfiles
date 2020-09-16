@@ -16,6 +16,7 @@ PS1="%B%F{blue}%D{%Y%m%d %H:%M} %(?.%F{green}.%F{red})[%? %!] %F{yellow}%n@%m:%F
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.cache/shell/zsh_history
+setopt INC_APPEND_HISTORY --- save not only at exit - if not used lose history from multiple shells?
 
 # Basic auto/tab complete:
 autoload -U compinit
@@ -35,7 +36,19 @@ bindkey -M menuselect 'h' vi-backward-char
 bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
-bindkey -v '^?' backward-delete-char
+bindkey -v '^?' backward-delete-char # vi-... will only delete till /insert/
+bindkey -v '^R' history-incremental-search-backward # like with bash
+bindkey -v '^N' history-incremental-search-forward # C-s is not used, but not working - add C-p for backward to be /consistant/
+bindkey -v '^P' history-incremental-search-backward
+
+# # # # # # TODO # # # # # #
+# use history search
+# https://unix.stackexchange.com/questions/97843/how-can-i-search-history-with-text-already-entered-at-the-prompt-in-zsh
+# https://unix.stackexchange.com/questions/44115/how-do-i-perform-a-reverse-history-search-in-zshs-vi-mode
+# different movement
+# https://stackoverflow.com/questions/32686012/rebind-normal-mode-controls-vi-zsh
+# key mapping
+# https://unix.stackexchange.com/questions/116562/key-bindings-table
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select {
@@ -76,3 +89,4 @@ bindkey '^e' edit-command-line
 # source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
 
 setopt interactivecomments
+setopt auto_cd

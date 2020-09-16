@@ -16,7 +16,27 @@ do I need this or should I change MacOS to local plist to handle GUI path?
 https://superuser.com/questions/476752/setting-environment-variables-in-os-x-for-gui-applications
 https://apple.stackexchange.com/questions/106355/setting-the-system-wide-path-environment-variable-in-mavericks#
 
-**** Setting global environment variables on OS X
+* TRY start-up messages and time
+this is from [[id:23D5D84D-4751-4E82-ADDC-3DCE6CE84112][Andrea]]
+
+also check =M-x emacs-init-time=
+
+#+begin_src emacs-lisp
+(defun mbb/init-audit-message (string)
+  "Print out STRING and calculate length of init."
+  (message string)
+  (if (not (string= "end" (substring string -3)))
+      (setq mbb/init-audit-message-begin (current-time))
+    (message
+     "It took %s seconds in total."
+     (time-to-seconds
+      (time-subtract
+       (current-time)
+       mbb/init-audit-message-begin))))
+  nil)
+#+end_src
+
+* Setting global environment variables on OS X
 It is a bit of a mystery for many Mac users how to create environment variables that will be available for all applications,
 including those launched from icons, etc.
 
@@ -119,9 +139,13 @@ Next time I should try out [[https://github.com/Malabarba/elisp-bug-hunter][bug 
 ** TODO binding keys
 should move over all =bind-key= to [[https://github.com/jwiegley/use-package/blob/master/bind-key.el][bind-key]] (:bind in use-package)
 this enables me to very easy see all the changes with =describe-personal-keybindings=
-
-should start with =evil-numbers=
 * package support
+update packages is done manually
+
+=M-x list-packages= hit =U= to mark available upgrades, then review to decide if there are any I don't want to pick up. Then =x= to upgrade.
+
+not sure if the refresh is done automatically, with =M-x package-list-packages= I always use =package-refresh-contents=.
+
 ** use-package
 
 Looks like this is the simplest way to instal and configure packages.
@@ -139,7 +163,12 @@ The /use-package/keyword /:diminish/ requires [[https://github.com/myrjola/dimin
 #+BEGIN_SRC emacs-lisp
 (use-package diminish)
 #+END_SRC
-
+*** TRY select source
+#+begin_example
+  :pin git
+#+end_example
+to use ELPA instead of MELPA
+the name is the one used in =package-list-packages=
 *** TODO defer
 is /defer/ no the default for all or do I need to add it explicitely?
 #+BEGIN_EXAMPLE
@@ -232,7 +261,11 @@ from wikipedia:
 
 #+BEGIN_SRC emacs-lisp
     (setq ispell-program-name (executable-find "hunspell"))
-    (setq ispell-dictionary "en_GB")
+    ;; For saving words to the personal dictionary, don't infer it from the locale, otherwise it would save to ~/.hunspell_de_DE.
+    ;; file needs to exists, or it will not be used
+    (setq ispell-personal-dictionary "~/.config/hunspell_personal")
+
+    (setq ispell-dictionary "de_DE,en_GB") ; added 2nd entry how does this work? there is also more settings like this --- didn't see an effect
     ;; Please note the list `("-d" "en_US")` contains ACTUAL parameters passed to hunspell
     ;; You could use `("-d" "en_US,en_US-med")` to check with multiple dictionaries
     (setq ispell-dictionary-alist '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)
@@ -278,6 +311,9 @@ could not /find/ the function *helm-flyspell-correct*
 not sure what is going on
 *new config from the script file*
 
+*** new : handling
+With =M-x flyspell-mode=, you'll enable Flyspell mode which highlights all misspelled words. With =M-$=, you'll check and correct spelling of the word at point. With =M-x ispell-buffer=, you'll check and correct spelling in the buffer. See [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][the docs]] for all available functions and keyboard shortcuts.
+
 ** GUI
 In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
 If I want to close a buffer, it is the one I'm in.
@@ -315,6 +351,44 @@ This bit me quite often. Disabled.
 (setq mouse-yank-at-point t)
 #+END_SRC
 
+** theme
+#+begin_src emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+
+(let ((basedir "~/.emacs.d/themes/"))
+      (dolist (f (directory-files basedir))
+        (if (and (not (or (equal f ".") (equal f "..")))
+                 (file-directory-p (concat basedir f)))
+            (add-to-list 'custom-theme-load-path (concat basedir f)))))
+
+(add-to-list 'load-path "~/.emacs.d/themes/color-theme-sanityinc-tomorrow")
+#+end_src
+
+      modus-operandi-theme-slanted-constructs t
+      modus-operandi-theme-bold-constructs t
+      modus-operandi-theme-fringes 'subtle ; {nil,'subtle,'intense}
+      modus-operandi-theme-mode-line '3d ; {nil,'3d,'moody}
+      modus-operandi-theme-faint-syntax nil
+      modus-operandi-theme-intense-hl-line nil
+      modus-operandi-theme-intense-paren-match nil
+      modus-operandi-theme-prompts nil ; {nil,'subtle,'intense}
+      modus-operandi-theme-completions 'moderate ; {nil,'moderate,'opinionated}
+      modus-operandi-theme-diffs nil ; {nil,'desaturated,'fg-only}
+      modus-operandi-theme-org-blocks 'greyscale ; {nil,'greyscale,'rainbow}
+      modus-operandi-theme-variable-pitch-headings t
+      modus-operandi-theme-rainbow-headings t
+      modus-operandi-theme-section-headings t
+      modus-operandi-theme-scale-headings t
+      modus-operandi-theme-scale-1 1.1
+      modus-operandi-theme-scale-2 1.15
+      modus-operandi-theme-scale-3 1.21
+      modus-operandi-theme-scale-4 1.27
+      modus-operandi-theme-scale-5 1.33
+#+begin_src emacs-lisp
+(setq modus-operandi-theme-bold-constructs t
+      modus-operandi-theme-scale-headings t)
+(load-theme 'modus-operandi t)
+#+end_src
 ** on OS X
 Get the key-layout as used by Linux/Windows.
 
@@ -322,6 +396,19 @@ TODO: test for OS X
 
 https://github.com/stig/ob-applescript.el
 not sure if I need this, bat keep the posibility in mind
+
+*** keyboard
+To map the physical key to emacs modifier use the variables
+- ns-control-modifier :: alias mac-control-modifier
+- ns-alternate-modifier :: alias ns-option-modifier and mac-option-modifier
+- ns-command-modifier :: alias mac-command-modifier
+- ns-function-modifier :: alias mac-function-modifier
+and set to =control=, =meta=, =alt=, =super=, =hyper= or =none= (ignored by Emacs and retains its standard meaning).
+
+This maps the /left/ and /right/ key. To map differently map the /normal/ and /right/ key (variable).
+- ns-right-control-modifier :: alias mac-right-control-modifier
+- ns-right-alternate-modifier :: alias ns-right-option-modifier and mac-right-option-modifier
+- ns-right-command-modifier :: mac-right-command-modifier
 
 see http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
 #+BEGIN_SRC emacs-lisp
@@ -531,6 +618,8 @@ Also look at =runx_emacs=. There I'm collected some of the notes I used to fix t
            ("6j" "Journal entry"
              entry (file+datetree ,(concat (getenv "REPOS") "/C64/journal.org"))
              "* %?\n%i\n  %a")
+          ("w" "org-protocol" entry (file "/tmp/refile.org")
+               "* TODO Review %a\n%:initial\n" :immediate-finish t) ; from https://mediaonfire.com/blog/2017_07_21_org_protocol_firefox.html changed as it didn't work
          )
 )
 #+END_SRC
@@ -605,7 +694,16 @@ try [[https://github.com/abo-abo/org-download][org-download]] from abo-abo
   (setq-default org-download-image-dir "./pictures"))
 #+END_SRC
 
-** evil
+*** org-protocol
+not working at start-up, but after some time - it works
+#+BEGIN_SRC emacs-lisp
+(mbb/init-audit-message "--- org-protocol begin")
+(require 'org-protocol)
+(setq org-protocol-default-template-key "w")
+(mbb/init-audit-message "--- org-protocol end")
+#+END_SRC
+
+** TODO evil
 from evil [[https://github.com/emacs-evil/evil][home page]]
 evil requires _undo tree_
 not configured, did evil load it automatically from melpa?
@@ -632,17 +730,20 @@ there is more to set, like /'visual/ the controls the wrapped line handling
 (setq-default display-line-numbers 'relative)
 #+END_SRC
 
-*** increase/decrease numbers
+*** TODO increase/decrease numbers
 Not part of default emacs. There is the [[https://github.com/cofi/evil-numbers][evil numbers]] module to add this feature.
 In vim C-a and C-x are used. I think I shouldn't use C-x.
 Start using the =default= C-+ and C--, but only in =normal= mode, as it is the default for =org table sum/substract=.
 #+BEGIN_SRC emacs-lisp
 (use-package evil-numbers
+  :bind (("C-c +" . evil-numbers/inc-at-pt)
+         ("C-c -" . evil-numbers/dec-at-pt)))
+#+END_SRC
+changed to :bind --- check if working *NO* at least not in org-mode, there =C-c -= is iterating to different list formats and =C-c += is not working, /normal/ text file is OK
   :config
     (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
     (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
 )
-#+END_SRC
 
 *** test
 cicles throug different cases
@@ -669,6 +770,8 @@ need to be on 1st char of end tag _</_ is ignored, _<_ will even be the tag befo
 
 *** TODO org
 https://github.com/GuiltyDolphin/org-evil
+
+is this working ? prerequisites are missing
 
 #+begin_src emacs-lisp
 (use-package org-evil)
@@ -754,14 +857,21 @@ don't need to worry about order. This neat feature means that =foo bar= is equiv
 (use-package ripgrep
   :after projectile)
 #+END_SRC
-
+missing some features see [[id:8FA93FFD-14A1-456E-8EC5-D2298E6CCAE2][Zamansky 73]]
 
 helm-grep-do-git-grep
 start typing and /wait/ - selection will apear and I'm able to change live the result
 
 projectile-ripgrep
 search result is displayed in /error buffer/
-next-error and previous-error will do the navigation
+- M-g M-n | M-g n | C-x ` :: Visit the locus of the next error message or match (=next-error=).
+- M-g M-p | M-g p :: Visit the locus of the previous error message or match (=previous-error=).
+- M-n :: M| ove point to the next error message or match, without visiting its locus (=compilation-next-error=).
+- M-p :: Move point to the previous error message or match, without visiting its locus (=compilation-previous-error=).
+- M-} :: Move point to the next error message or match occurring in a different file (=compilation-next-file=).
+- M-{ :: Move point to the previous error message or match occurring in a different file (=compilation-previous-file=).
+- C-c C-f :: Toggle Next Error Follow minor mode, which makes cursor motion in the compilation buffer produce automatic source display.
+- g :: Re-run the last command whose output is shown in the =*compilation*= buffer.
 
 not everything worked as expected
 https://emacs.stackexchange.com/questions/10842/recursive-grep-in-directory-with-helm-and-or-projectile
@@ -914,6 +1024,7 @@ Example, setup like this:
             "English - German")))
 #+END_SRC
 *** TODO [[https://github.com/SavchenkoValeriy/emacs-powerthesaurus][powerthesaurus]]
+https://github.com/SavchenkoValeriy/emacs-powerthesaurus
 selected word or input
 result in minibuffer, only one line, difficult to find a word
 the original word will be replaced
@@ -928,7 +1039,7 @@ but I still have the problem, that the /word/ the point is on is not used
 and also after the lookup, there is no word, *need first to press TAB to see a selection*
 should look for an other package?
 
-/mw-thesaurus.el/ also provides a definition, but uses the /new/ Merriam-Webster and also needs an account
+/mw-thesaurus.el/ also provides a definition, but uses the /new/ Merriam-Webster and also needs an account (default is the developer)
 #+END_COMMENT
 *** define-word
 needed to enter the word, didn't use the word at point, as advertised
@@ -936,9 +1047,32 @@ needed to enter the word, didn't use the word at point, as advertised
 (use-package define-word
   :bind (("C-c d d" . define-word)))
 #+END_SRC
+*** Merriam-Webster
+https://github.com/agzam/mw-thesaurus.el
+#+BEGIN_SRC emacs-lisp
+(use-package mw-thesaurus
+  :bind (("C-c d m" . mw-thesaurus-lookup-at-point)) ; the only command
+)
+#+END_SRC
+
+- RET :: lookup for the word
+  not sure when to press
+- q :: kill mw-thesaurus buffer and close the window
+  for this to work (in mw buffer) evil needs to be in insert mode
+
+interestingly in an other post was a link to the US word bijou by a British guy
+do not get an result , but the [[https://www.merriam-webster.com/dictionary/bijou][web link]] will find the word :-(
+this was not the only word where it didn't return a (known) result, e.g. /British/
 
 * programming
+#+begin_src emacs-lisp
+;; Use cperl-mode instead of the default perl-mode
+(defalias 'perl-mode 'cperl-mode)
+#+end_src
 ** common
+C-j electric-newline-and-maybe-indent
+M-j indent-new-comment-line
+
 *** comment box
 Following [[http://pragmaticemacs.com/emacs/comment-boxes/][Ben Maughan]] to the original post from [[http://irreal.org/blog/?p=374][irreal]] to get the better explanation of the function.
 
@@ -1166,11 +1300,14 @@ in fedora installed yamllint via dnf - otherwise use pip
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
 #+END_SRC
 * test
-** [[https://github.com/alpha22jp/atomic-chrome][atomic chrome]]
+** THINK [[https://github.com/alpha22jp/atomic-chrome][atomic chrome]]
 #+BEGIN_SRC emacs-lisp
-(use-package atomic-chrome)
-(atomic-chrome-start-server)
+;(use-package atomic-chrome)
+;(atomic-chrome-start-server)
 #+END_SRC
+
+not using - there is also a firefox plugin https://addons.mozilla.org/en-US/firefox/addon/ghosttext/
+also for chrome I think this is the successor https://github.com/GhostText/GhostText
 
 ** [[http://xenodium.com/#actionable-urls-in-emacs-buffers][actionable URLs in Emacs buffers]]
 use C-c C-o to open URL in browser not only for org-buffer
@@ -1332,13 +1469,9 @@ didn't work, get void :map
          ("C-c <" . helm-gtags-previous-history)
          ("C-c >" . helm-gtags-next-history)))
 
-** speedbar
+** NO speedbar
    didn't use this feature in eclipse
    it still looks /as bad/ as some years ago
-#+BEGIN_SRC emacs-lisp
-;(use-package sr-speedbar)
-#+END_SRC
-
 ** auto complete
 looks like /company/ is the prefered solution.
 what about projectile, I instlled from the Python IDE example?
@@ -1379,8 +1512,10 @@ This is more predictable than the normal jump, but still not as /precise/ as a d
 ** lua
 http://immerrr.github.io/lua-mode/
 
+disabled due error with 27.1
+Error (use-package): lua-mode/:catch: Unknown rx form ‘symbol’
 #+BEGIN_SRC emacs-lisp
-(use-package lua-mode)
+;(use-package lua-mode)
 #+END_SRC
 
 ** using emacs
@@ -1523,29 +1658,6 @@ There are some more commands which you can explore yourself by looking at the co
          ("M-s ~" . avy-goto-char-timer)))
 #+END_SRC
 
-** mpv
-#+BEGIN_SRC emacs-lisp
-(org-add-link-type "mpv" #'mpv-play)
-(defun org-mpv-complete-link (&optional arg)
-  (replace-regexp-in-string
-   "file:" "mpv:"
-   (org-file-complete-link arg)
-   t t))
-(add-hook 'org-open-at-point-functions #'mpv-seek-to-position-at-point)
-
-(defun org-timer-item--mpv-insert-playback-position (fun &rest args)
-  "When no org timer is running but mpv is alive, insert playback position."
-  (if (and
-       (not org-timer-start-time)
-       (mpv-live-p))
-      (mpv-insert-playback-position t)
-    (apply fun args)))
-(advice-add 'org-timer-item :around
-            #'org-timer-item--mpv-insert-playback-position)
-#+END_SRC
-
-#+RESULTS:
-
 *** New dispatch actions
 Suppose you have bound:
 
@@ -1578,6 +1690,49 @@ Additionally, you can use =avy-next= and =avy-prev= to cycle between the last =a
 
     (global-set-key (kbd "C-M-'") 'hydra-avy-cycle/body)
 #+END_EXAMPLE
+
+** mpv
+#+BEGIN_SRC emacs-lisp
+(org-add-link-type "mpv" #'mpv-play)
+(defun org-mpv-complete-link (&optional arg)
+  (replace-regexp-in-string
+   "file:" "mpv:"
+   (org-file-complete-link arg)
+   t t))
+(add-hook 'org-open-at-point-functions #'mpv-seek-to-position-at-point)
+
+(defun org-timer-item--mpv-insert-playback-position (fun &rest args)
+  "When no org timer is running but mpv is alive, insert playback position."
+  (if (and
+       (not org-timer-start-time)
+       (mpv-live-p))
+      (mpv-insert-playback-position t)
+    (apply fun args)))
+(advice-add 'org-timer-item :around
+            #'org-timer-item--mpv-insert-playback-position)
+#+END_SRC
+
+** Visually highlight the selected buffer
+#+BEGIN_SRC emacs-lisp
+;(use-package dimmer
+;  :config
+;    (dimmer-mode t)
+;)
+#+END_SRC
+this is not working on org buffers
+if I don't like this try =auto-dim-other-buffers=
+#+BEGIN_SRC emacs-lisp
+;(use-package auto-dim-other-buffers)
+#+END_SRC
+OK, also working with org buffers
+*ACHTUNG* in case of =M-x= (:) the minibuffer is /highlighted/ and I don't see on which buffer the command would run
+** emoji
+#+begin_src emacs-lisp
+(use-package unicode-fonts
+   :ensure t
+   :config
+    (unicode-fonts-setup))
+#+end_src
 * last steps
 If done at begin of script the _scrollbar_ and _fringe_ change.
 A litter later these are bag as before. Try now as the last step of the configuration.
@@ -1645,6 +1800,11 @@ https://emacs.stackexchange.com/questions/13314/install-pdf-tools-on-emacs-macos
     '(pdf-tools-handle-upgrades nil)) ; Use brew upgrade pdf-tools instead.
   (setq pdf-info-epdfinfo-program "/usr/local/bin/epdfinfo"))
 (pdf-tools-install)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package org-pdftools
+  :hook (org-load-hook . org-pdftools-setup-link))
 #+end_src
 ** ledger
 Had tried =hledger-mode=, but never got it working properly.

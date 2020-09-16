@@ -14,3 +14,9 @@ else
   # https://github.com/politza/pdf-tools
   #export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig
 fi
+
+# use CDPATH so it works in bash and zsh
+# REMEMBER need to use a directory "inside" the listed directory, not the actually named one
+export CDPATH="$HOME/repos:/Volume/data"
+# this is not working for the external mounted drive
+# anyway not sure if I like this - a view times I used TAB to complete a /known/ directory and pressed return without realising it haddn't worked as at least one conflict was part of the CDPATH

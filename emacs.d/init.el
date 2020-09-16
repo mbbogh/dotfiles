@@ -1,7 +1,3 @@
-; ELPA updates failing - fix
-; via https://irreal.org/blog/?p=8243 --- didn't work the 1st time I tested it, do I need to update gnutls?
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
 ; TODO still not sure what caused my problem and why with this changes it works (different)
 ; Configure package.el to include MELPA.
 ; moved this over from config.org to be able to use org from repo, not build in
@@ -31,5 +27,7 @@
 
 (require 'org)
 (org-babel-load-file (expand-file-name "config.org" user-emacs-directory))
+
+; set defaults I otherwise would be asked at 1st use
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
