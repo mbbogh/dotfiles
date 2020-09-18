@@ -16,7 +16,7 @@ PS1="%B%F{blue}%D{%Y%m%d %H:%M} %(?.%F{green}.%F{red})[%? %!] %F{yellow}%n@%m:%F
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.cache/shell/zsh_history
-setopt INC_APPEND_HISTORY --- save not only at exit - if not used lose history from multiple shells?
+setopt INC_APPEND_HISTORY # --- save not only at exit - if not used lose history from multiple shells?
 
 # Basic auto/tab complete:
 autoload -U compinit

@@ -1,4 +1,4 @@
-#+SEQ_TODO: LATER(l) TODO(t) THINK(k) TRY(y) | DONE(d) MAYBE_ONE_DAY(m)
+#+SEQ_TODO: LATER(l) TODO(t) THINK(k) TRY(y) | DONE(d) DISABLED(D) MAYBE_ONE_DAY(m) NO(n)
 #+TAGS: READ(r) IN_TEST(t)
 #+TITLE: common emcas comfiguration
 
@@ -181,13 +181,6 @@ check out https://github.com/mathiasdahl/dotemacs/blob/master/barebones.el
 ** common
 
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-(setq column-number-mode t)
-(show-paren-mode 1)
-
-(setq-default indent-tabs-mode nil) ; use space instead of tabs
-(setq tab-width 2) ; or any other preferred value
-
 (setq-default fill-column 132)
 
 (add-to-list 'auto-mode-alist '("Makefile.*" . makefile-gmake-mode))
@@ -333,16 +326,6 @@ As I will not use any thing with this, I changed the simple key remap to the new
 (global-set-key (kbd "C-x k") 'mbb-kill-a-buffer)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(if window-system
-  (tool-bar-mode -1)
-;;(menu-bar-mode -1)
-; moved to back of config
-;  (scroll-bar-mode -1)
-;  (fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
-)
-#+END_SRC
-
 *** Pasting with the mouse without moving the point
 Emacs in GUI mode will paste with middle-click at the mouse cursor position, not the point (like Vim).
 This bit me quite often. Disabled.
@@ -390,31 +373,8 @@ This bit me quite often. Disabled.
 (load-theme 'modus-operandi t)
 #+end_src
 ** on OS X
-Get the key-layout as used by Linux/Windows.
-
-TODO: test for OS X
-
 https://github.com/stig/ob-applescript.el
 not sure if I need this, bat keep the posibility in mind
-
-*** keyboard
-To map the physical key to emacs modifier use the variables
-- ns-control-modifier :: alias mac-control-modifier
-- ns-alternate-modifier :: alias ns-option-modifier and mac-option-modifier
-- ns-command-modifier :: alias mac-command-modifier
-- ns-function-modifier :: alias mac-function-modifier
-and set to =control=, =meta=, =alt=, =super=, =hyper= or =none= (ignored by Emacs and retains its standard meaning).
-
-This maps the /left/ and /right/ key. To map differently map the /normal/ and /right/ key (variable).
-- ns-right-control-modifier :: alias mac-right-control-modifier
-- ns-right-alternate-modifier :: alias ns-right-option-modifier and mac-right-option-modifier
-- ns-right-command-modifier :: mac-right-command-modifier
-
-see http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
-#+BEGIN_SRC emacs-lisp
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil) ; needed for none US keyboards to enter symbols
-#+END_SRC
 
 start emacs to debug init
 open -a /Applications/Emacs.app --args --debug-init
@@ -456,7 +416,6 @@ don't think this worked - do another test
 I think this is not needed
 
 #+BEGIN_SRC emacs-lisp
-(require 'org-tempo)
 ;    (require 'org-install)
 
 ;(use-package org-plus-contrib
@@ -782,18 +741,6 @@ is this working ? prerequisites are missing
   :bind (:map dired-mode-map
               ("/" . dired-narrow)))
 #+END_SRC
-** git
-*** [[https://github.com/magit/magit][magit]]
-Started to use magit.
-What is with the default /version control/ handling of emacs?
-
-Not sure what key to use. Looks like most use /C-x g/.
-This key, like /C-c g/ was not used on my setup.
-#+BEGIN_SRC emacs-lisp
-(use-package magit
-  :bind (("C-x g" . magit-status)))
-#+END_SRC
-
 ** projectile
 [[https://github.com/bbatsov/projectile][project on github]]
 
@@ -853,7 +800,7 @@ don't need to worry about order. This neat feature means that =foo bar= is equiv
 *** my setup
 [[https://github.com/BurntSushi/ripgrep][ripgrep]] the =rust= search tool project. There are some /benchmarks/ and also some other nice informations.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package ripgrep
   :after projectile)
 #+END_SRC
@@ -895,13 +842,14 @@ Starting with emacs 26 it is possible to use popup windows, so called [[https://
 (use-package helm-posframe)
 #+END_SRC
 
-#+RESULTS:
-
 setup ripgrep to be used
 why would I need
 #+BEGIN_SRC emacs-lisp
 (setq helm-grep-ag-command "rg --color=always --smart-case --no-heading --line-number %s %s %s")
 #+END_SRC
+#+begin_comment
+this will more or less show results in an other buffer
+#+end_comment
 
 also there are other packages, like [[https://github.com/cosmicexplorer/helm-rg][helm-rg]]
 what are the advantage/difference to the other packages or /nacked/ helm?
@@ -1095,9 +1043,6 @@ Following [[http://pragmaticemacs.com/emacs/comment-boxes/][Ben Maughan]] to the
 (global-set-key (kbd "C-c b b") 'mbb-comment-box)
 #+END_SRC
 
-#+RESULTS:
-: mbb-comment-box
-
 *** [[https://gitlab.com/jgkamat/rmsbolt][RMSbolt]]
 
 #+BEGIN_SRC emacs-lisp
@@ -1124,7 +1069,7 @@ https://github.com/Sarcasm/irony-mode
 I think this is the modern way - start here
 
 should use =clangd= as this is the one from the actual llvm project, see https://clang.llvm.org/extra/clangd/Installation.html
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package lsp-mode
   :hook (c-mode . lsp)
   :commands lsp)
@@ -1137,8 +1082,6 @@ should use =clangd= as this is the one from the actual llvm project, see https:/
 (use-package helm-lsp
   :commands helm-lsp-workspace-symbol)
 #+END_SRC
-
-#+RESULTS:
 
 ;*** irony
 ;#+BEGIN_COMMENT
@@ -1231,7 +1174,10 @@ Optional explicitly select the RTags Flycheck checker for c or c++ major mode.
 Turn off Flycheck highlighting, use the RTags one.
 Turn off automatic Flycheck syntax checking rtags does this manually.
 #+END_QUOTE
-#+BEGIN_SRC emacs-lisp
+
+*** DISABLED C/C++
+The rtags never worked properly on MacOS. Should first test on Linux if I like these before trying to get it working on the Mac.
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package flycheck-rtags
   :config
   (defun my-flycheck-rtags-setup ()
@@ -1245,6 +1191,7 @@ Turn off automatic Flycheck syntax checking rtags does this manually.
 )
 #+END_SRC
 
+*** Python
 need to set this, depending on OS installation, as otherwise the interpreter used is /2/
 #+BEGIN_SRC emacs-lisp
 (setq python-shell-interpreter "python3")
@@ -1280,8 +1227,6 @@ looks like it doesn't work - dell after reboot
       `((sh-mode--string-intepolated-variable-font-lock-find))
       'append)))
 #+END_SRC
-
-#+RESULTS:
 
 ** YAML
 use [[https://github.com/yoshiki/yaml-mode][yaml-mode]]
@@ -1415,8 +1360,8 @@ this will give a much better selection for /Imenu/
 https://github.com/tj64/outorg
 switch from programming language to org mode for simpler commenting the code
 
-** gtags
-   https://github.com/syohex/emacs-helm-gtags
+** DISABLED gtags
+https://github.com/syohex/emacs-helm-gtags
 
 *dwim* looks like a usefull command *M-]*
 Still not sure what to use to jump to definition of /name/ under cursor/.
@@ -1431,7 +1376,7 @@ Will use /helm-gtags/.
 Found a good [[http://tuhdo.github.io/c-ide.htm][C-IDE]] description and started to follow. This came from [[http://emacs.stackexchange.com/questions/801/how-to-get-intelligent-auto-completion-in-c][emacs stackexchange]].
 Read all his other instructions.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package helm-gtags
   :init
   (custom-set-variables
@@ -1456,9 +1401,6 @@ Read all his other instructions.
     (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))
 
 #+END_SRC
-
-#+RESULTS:
-: helm-gtags-next-history
 
 didn't work, get void :map
   :bind (:map helm-gtags-mode-map
@@ -1487,46 +1429,20 @@ https://www.reddit.com/r/emacs/comments/2ekw22/autocompletemode_vs_companymode_w
   )
 #+END_SRC
 
-** [[https://github.com/abo-abo/ace-window][ace-window]]
-got it from Mike Zamansky [[http://cestlaz.github.io/posts/using-emacs-5-windows/][video 5]]
-
-with more than two window [[https://github.com/abo-abo/ace-window#change-the-action-midway][extra commands]] are possible
-like =m= to swap windows
-
-to swap windows if there are only two us *C-u C-x o*
-
-#+BEGIN_SRC emacs-lisp
-(use-package ace-window
-  :init
-  (global-set-key [remap other-window] 'ace-window)
-  (custom-set-faces
-   '(aw-leading-char-face
-     ((t (:inherit ace-jump-face-foreground :height 3.0))))))
-#+END_SRC
-
-Looks like this /disables/ the 2/3 window handling. At this point the /active/ window is the small one
-
-*** alternatives
-=window-jump= will jump to the closest window in a particular direction (left, right, up or down).
-This is more predictable than the normal jump, but still not as /precise/ as a direct jump.
-** lua
+** DISABLED lua
 http://immerrr.github.io/lua-mode/
 
-disabled due error with 27.1
+disabled due error with 27.1 - and not doing any lua programming right now
 Error (use-package): lua-mode/:catch: Unknown rx form ‘symbol’
-#+BEGIN_SRC emacs-lisp
-;(use-package lua-mode)
+#+BEGIN_SRC emacs-lisp :tangle nil
+(use-package lua-mode)
 #+END_SRC
 
 ** using emacs
 *** 1
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package try)
-
-(use-package which-key
-  :config
-  (which-key-mode))
 #+END_SRC
 
 *** expand region
@@ -1630,67 +1546,6 @@ got this from /sacha 20181217/
 #+BEGIN_SRC emacs-lisp
 (use-package helpful)
 #+END_SRC
-** [[https://github.com/abo-abo/avy][avy]]
-looks better than [[https://github.com/winterTTr/ace-jump-mode][ace jump]] - didn't find a comparision, but lately more are using ace
-possible functions:
-- avy-goto-char
-- avy-goto-char-2
-- avy-goto-char-timer
-  - type as many as needed (update on the fly during delete)
-  - press return, no /timeout/ needed
-- avy-goto-line
-- avy-goto-word-1
-- avy-goto-word-0
-
-new with 0.5.0
-- avy-org-goto-heading-timer *try*
-- avy-org-refile-as-child
-
-#+BEGIN_QUOTE
-There are some more commands which you can explore yourself by looking at the code.
-#+END_QUOTE
-
-#+BEGIN_SRC emacs-lisp
-(use-package avy
-  :bind (("M-s ;" . avy-goto-word-1)
-         ("M-s l" . avy-goto-line)
-         ("M-s '" . avy-goto-char-2)
-         ("M-s ~" . avy-goto-char-timer)))
-#+END_SRC
-
-*** New dispatch actions
-Suppose you have bound:
-
-#+BEGIN_EXAMPLE
-    (global-set-key (kbd "M-t") 'avy-goto-word-1)
-#+END_EXAMPLE
-
-and a word that starts with a "w" and is select-able with "a". Here's what you can do now:
-
-- M-t w a to jump there
-- M-t w x a - =avy-action-kill-move=: kill the word and move there,
-- M-t w X a - =avy-action-kill-stay=: kill the word without moving the point,
-- M-t w i a - =avy-action-ispell=: use ispell/flyspell to correct the word,
-- M-t w y a - =avy-action-yank=: yank the word at point,
-- M-t w t a - =avy-action-teleport=: kill the word and yank it at point,
-- M-t w z a - =avy-action-zap-to-char=: kill from point up to selected point.
-
-You can customize =avy-dispatch-alist= to modify these actions, and also ensure that there's no overlap with your =avy-keys=, if you customized them.
-
-*** Restarting an =avy= search
-Suppose you jumped to a word that starts with "a". Now you want to jump to a different word that also starts with "a". You can use =avy-resume= for this.
-
-Additionally, you can use =avy-next= and =avy-prev= to cycle between the last =avy= candidates. Here's an example hydra to facilitate it:
-
-#+BEGIN_EXAMPLE
-    (defhydra hydra-avy-cycle ()
-      ("j" avy-next "next")
-      ("k" avy-prev "prev")
-      ("q" nil "quit"))
-
-    (global-set-key (kbd "C-M-'") 'hydra-avy-cycle/body)
-#+END_EXAMPLE
-
 ** mpv
 #+BEGIN_SRC emacs-lisp
 (org-add-link-type "mpv" #'mpv-play)
@@ -1733,16 +1588,6 @@ OK, also working with org buffers
    :config
     (unicode-fonts-setup))
 #+end_src
-* last steps
-If done at begin of script the _scrollbar_ and _fringe_ change.
-A litter later these are bag as before. Try now as the last step of the configuration.
-
-#+BEGIN_SRC emacs-lisp
-(scroll-bar-mode -1)
-;(fringe-mode 1) ;; show glyphs regarding the line - this reduced the buffer frame
-                 ;; if set to _1_ not linewraps etc are displayed
-                 ;; 0 will show the _terminal_ character
-#+END_SRC
 ** [[https://github.com/syohex/emacs-anzu][anzu]]
 minor mode which displays current match and total matches information in the mode-line in various search modes
 
