@@ -16,26 +16,6 @@ do I need this or should I change MacOS to local plist to handle GUI path?
 https://superuser.com/questions/476752/setting-environment-variables-in-os-x-for-gui-applications
 https://apple.stackexchange.com/questions/106355/setting-the-system-wide-path-environment-variable-in-mavericks#
 
-* TRY start-up messages and time
-this is from [[id:23D5D84D-4751-4E82-ADDC-3DCE6CE84112][Andrea]]
-
-also check =M-x emacs-init-time=
-
-#+begin_src emacs-lisp
-(defun mbb/init-audit-message (string)
-  "Print out STRING and calculate length of init."
-  (message string)
-  (if (not (string= "end" (substring string -3)))
-      (setq mbb/init-audit-message-begin (current-time))
-    (message
-     "It took %s seconds in total."
-     (time-to-seconds
-      (time-subtract
-       (current-time)
-       mbb/init-audit-message-begin))))
-  nil)
-#+end_src
-
 * Setting global environment variables on OS X
 It is a bit of a mystery for many Mac users how to create environment variables that will be available for all applications,
 including those launched from icons, etc.
@@ -191,12 +171,6 @@ Something that was driving me nuts was Emacs electric-indent indenting the previ
 #+BEGIN_SRC emacs-lisp
 (setq-default electric-indent-inhibit t)
 #+END_SRC
-try wraping at words and not hard at character coount
-
-not sure if this is usefull, activate only in /text/ mode?
-#+BEGIN_SRC emacs-lisp
-(setq-default word-wrap 1)
-#+END_SRC
 
 *** Highlighting Tabs and Spaces Differently
 Something that I feel that is very important to have in an editor is a way to identify spaces and tabs easily. They are both whitespace characters that can easily be confused for eachother.
@@ -245,34 +219,15 @@ the system clipboard text to the kill-ring so that you can find it when you [[ht
 (setq save-interprogram-paste-before-kill t)
 #+END_SRC
 ** spell checking
-from wikipedia:
-- =spell= is the granddaddy, optimized for English
-- =aspell= is an /ispell/ replacement to get a GPL version (ispell has a /coppy left license/
-- =hunspell= originally developed for Hungarian it is usable  for many other languages, as it using a /morphological/ analyser.
-  It is used (replaced ispell) for many projects like LibreOffice, Chromium, Firefox, Mac OS X, ...
-  It is also the default installation on Fedora.
 
 #+BEGIN_SRC emacs-lisp
     (setq ispell-program-name (executable-find "hunspell"))
-    ;; For saving words to the personal dictionary, don't infer it from the locale, otherwise it would save to ~/.hunspell_de_DE.
-    ;; file needs to exists, or it will not be used
     (setq ispell-personal-dictionary "~/.config/hunspell_personal")
-
-    (setq ispell-dictionary "de_DE,en_GB") ; added 2nd entry how does this work? there is also more settings like this --- didn't see an effect
-    ;; Please note the list `("-d" "en_US")` contains ACTUAL parameters passed to hunspell
-    ;; You could use `("-d" "en_US,en_US-med")` to check with multiple dictionaries
+    (setq ispell-dictionary "de_DE,en_GB")
     (setq ispell-dictionary-alist '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)
                                     ("de_DE" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "de_DE_frami") nil utf-8)))
 ;;    (ispell-change-dictionary "en_GB" t) this failed - also all /1st/ iteractive actions fail
-  (setq ispell-local-dictionary "en_GB")
-  (setq ispell-local-dictionary-alist
-        '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)
-          ("de_DE" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "de_DE_frami") nil utf-8)
-          ))
 #+END_SRC
-
-If you /ispell/ a buffer and want to edit the word use *C-r* (recursive-edit). This will not end the spell session. Exit with C-M-c
-to keep the change and continue spell checking.
 
 *** [[http://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html][flyspell]]
 /flyspell-auto-correct-previous-word/ will cycle through possible replacements for the 1st backward found misspelled word.
@@ -308,24 +263,6 @@ not sure what is going on
 With =M-x flyspell-mode=, you'll enable Flyspell mode which highlights all misspelled words. With =M-$=, you'll check and correct spelling of the word at point. With =M-x ispell-buffer=, you'll check and correct spelling in the buffer. See [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][the docs]] for all available functions and keyboard shortcuts.
 
 ** GUI
-In the post [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs: Don’t kill-buffer, kill-this-buffer instead]] Ben Maughan states exactly what I nearly always do.
-If I want to close a buffer, it is the one I'm in.
-There was an /update post/ by [[http://irreal.org/blog/?p=5585][irreal]] to us the /universal-argument/ (C-u) to get back th old behaviour.
-As I will not use any thing with this, I changed the simple key remap to the new function.
-#+BEGIN_SRC emacs-lisp
-;;(global-set-key (kbd "C-x k") 'kill-this-buffer)
-
-(defun mbb-kill-a-buffer (askp)
-  (interactive "P")
-  (if askp
-      (kill-buffer (funcall completing-read-function
-                            "Kill buffer: "
-                            (mapcar #'buffer-name (buffer-list))))
-    (kill-this-buffer)))
-
-(global-set-key (kbd "C-x k") 'mbb-kill-a-buffer)
-#+END_SRC
-
 *** Pasting with the mouse without moving the point
 Emacs in GUI mode will paste with middle-click at the mouse cursor position, not the point (like Vim).
 This bit me quite often. Disabled.
@@ -429,7 +366,6 @@ Should think about installing org directly, as the included version is missing s
 #+END_COMMENT
 
 #+BEGIN_SRC emacs-lisp
-(define-key global-map "\C-cc" 'org-capture) ;;; TODO ;;; is this realy needed
 ;(setq org-export-coding-system ’utf-8)
 #+END_SRC
 
@@ -457,184 +393,6 @@ possible to type tags directly (enclosed by ::)
 (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
 #+END_SRC
 
-*** org-babel
-[[https://github.com/astahlman/ob-async][ob-async]] enables asynchronous execution of org-babel src blocks
-for this to work simply add *:async* to the #+BEGIN_SRC line
-so far not sure if I need it, disadvantages?
-
-plantUML setup from
-- http://plantuml.com/emacs
-- http://eschulte.github.io/babel-dev/DONE-integrate-plantuml-support.html
-#+BEGIN_SRC emacs-lisp
-;; active Org-babel languages
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '(;; other Babel languages
-   (C . t) ; https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-C.html
-   (ledger . t)
-   (plantuml . t)
-   (python . t)
-   (shell . t)
-   (sql . t)
-  ))
-
-; https://emacs.stackexchange.com/questions/13107/replace-plantuml-source-with-generated-image-in-org-mode
-(add-hook 'org-babel-after-execute-hook
-          (lambda ()
-            (when org-inline-image-overlays
-              (org-redisplay-inline-images))))
-
-(setq org-plantuml-jar-path
-      (expand-file-name "~/bin/plantuml.jar"))
-#+END_SRC
-
-do I need the major mode plugin? https://github.com/skuro/plantuml-mode
-path and other setup http://www.alvinsim.com/diagrams-with-plantuml-and-emacs/
-
-Varaibles I found set in some blog posts, but the default is OK
-(setq org-src-fontify-natively t)
-
-Finally, if you work with white-space sensitive languages such as python, remember to add the followings:
-#+BEGIN_SRC emacs-lisp
-  (setq org-edit-src-content-indentation 0)
-  (setq org-src-tab-acts-natively t)
-  (setq org-src-preserve-indentation t)
-#+END_SRC
-
-tangle multiple C source-blocks https://emacs.stackexchange.com/questions/29939/c-c-coding-in-emacs-org-modes-babel
-*** capture
-    http://orgmode.org/manual/Capture-templates.html
-    http://orgmode.org/guide/Capture-templates.html
-    http://orgmode.org/manual/Template-expansion.html
-    http://sachachua.com/blog/2015/02/learn-take-notes-efficiently-org-mode/
-    http://koenig-haunstetten.de/2014/08/29/the-power-of-orgmode-capture-templates/
-    https://lists.gnu.org/archive/html/emacs-orgmode/2010-08/msg00458.html
-    http://stackoverflow.com/questions/9005843/interactively-enter-headline-under-which-to-place-an-entry-using-capture
-    http://stackoverflow.com/questions/13550799/how-to-use-org-mode-capture-refile-mechanism-to-build-my-own-vocabulary
-
-should change the hard coded path to a shell variable
-(getenv "HOST")
-this could be tricky on the Mac is started via teh dock
-https://stackoverflow.com/questions/9663396/how-do-i-make-emacs-recognize-bash-environment-variables-for-compilation
-
-tried to use a path, but both didn't work
-https://emacs.stackexchange.com/questions/34558/how-can-i-get-some-environment-variables-into-init-el-to-construct-file-paths
-             entry (file+headline (format "%s/emacs_notes/lim400_capture.org" (getenv "REPOS")) "Tasks")
-             entry (file+headline (substitute-in-file-name "${REPOS}/emacs_notes/lim400_capture.org") "Tasks")
-
-add date to property from [[https://emacs.stackexchange.com/questions/26119/org-mode-adding-a-properties-drawer-to-a-capture-template][stackexchange]]
-#+BEGIN_SRC emacs-lisp
-(defun add-property-with-date-captured ()
-  "Add DATE_CAPTURED property to the current item."
-  (interactive)
-  (org-set-property "DATE_CAPTURED" (format-time-string "%F %T")))
-
-(add-hook 'org-capture-before-finalize-hook 'add-property-with-date-captured)
-#+END_SRC
-
-still no completely working
-https://emacs.stackexchange.com/questions/550/exec-path-and-path
-https://stackoverflow.com/questions/135688/setting-environment-variables-on-os-x
-
-Needed to change the ='= of setq 2nd parameter to =`= (backquote) and add the =,= in front of the function to generate the path.
-With the old configuration I always got the error message, that the path was =nil=.
-
-Still not sure what exactly is the difference. Should read up about this in the lisp manual.
-Also look at =runx_emacs=. There I'm collected some of the notes I used to fix the problem.
-
-#+BEGIN_SRC emacs-lisp
-(define-key global-map "\C-cc" 'org-capture)
-(setq org-capture-templates
-        `(("t" "capture todos"
-            entry (file+headline ,(concat (getenv "REPOS") "/notes/capture/capture.org") "Tasks")
-            "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
-          ("n" "capture note"
-            entry (file+headline ,(substitute-in-file-name "${REPOS}/notes/capture/capture.org") "Notes")
-            "* %^{prompt}\n%?")
-          ("j" "Journal entry"
-            entry (file+datetree ,(concat (getenv "REPOS") "/notes/capture/journal.org"))
-            "* %?\n")
-          ("d" "datenabgleich"
-            entry (file+datetree ,(concat (getenv "REPOS") "/notes/capture/datenabgleich.org"))
-            "* %?\n")
-          ("2" "CHM2T")
-           ("2t" "capture todos"
-             entry (file+headline ,(concat (getenv "REPOS") "/emacs_notes/chm2t_capture.org") "Tasks")
-             "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
-           ("2j" "Journal entry"
-             entry (file+datetree ,(concat (getenv "REPOS") "/emacs_notes/chm2t_journal.org"))
-             "* %?\nEntered on %U\n  %i\n  %a")
-          ("s" "code snippet"
-            entry (file "/tmp/snippets.org")
-            "* %?\n%(my/org-capture-code-snippet \"%F\")")
-          ("6" "C64")
-           ("6t" "capture todos"
-             entry (file+headline ,(concat (getenv "REPOS") "/C64/capture.org") "Tasks")
-             "* TODO %^{prompt}    %^g\n%i\n%a\n%?\n")
-           ("6n" "capture note"
-             entry (file+headline ,(concat (getenv "REPOS") "/C64/capture.org") "Notes")
-             "* %^{prompt}\n%?")
-           ("6j" "Journal entry"
-             entry (file+datetree ,(concat (getenv "REPOS") "/C64/journal.org"))
-             "* %?\n%i\n  %a")
-          ("w" "org-protocol" entry (file "/tmp/refile.org")
-               "* TODO Review %a\n%:initial\n" :immediate-finish t) ; from https://mediaonfire.com/blog/2017_07_21_org_protocol_firefox.html changed as it didn't work
-         )
-)
-#+END_SRC
-
-**** support functions
-The _irreal_ post [[http://irreal.org/blog/?p=7207][Capturing Code Snippets]] directed me to the example on how to automate the information gathering for code snippets
-from source code files.
-#+BEGIN_SRC emacs-lisp
-(defun my/org-capture-get-src-block-string (major-mode)
-    "Given a major mode symbol, return the associated org-src block
-    string that will enable syntax highlighting for that language
-
-    E.g. tuareg-mode will return 'ocaml', python-mode 'python', etc..."
-
-    (let ((mm (intern (replace-regexp-in-string "-mode" "" (format "%s" major-mode)))))
-      (or (car (rassoc mm org-src-lang-modes)) (format "%s" mm))))
-
-(defun my/org-capture-code-snippet ()
-    (let ( (a "string a")
-           (file-name (buffer-file-name))
-           (b "string b"))
-         (format "%s file: %s : %s >>%s<<" b f a file-name)))
-#+END_SRC
-
-/structure template expansion/ changed in 9.2 and needs adaption as it is incompatible with older version ([[https://orgmode.org/Changes_old.html][see change log]])
-also read https://orgmode.org/Changes.html
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'org-structure-template-alist
-    '("S" . "summary"))
-#+END_SRC
-
-*** my keyboard macros
-This will convert an Markdown link []() to an org mode link [[][]].
-
-https://www.emacswiki.org/emacs/KeyboardMacros
-    M-x name-last-kbd-macro
-    M-x insert-kbd-macro ---> bekomme das macro als text
-
-    wieder verwenden
-    Zeile oben (fset) mit eval-region "einlesen"
-    Zeike unten "interaktive" ausfuehren
-    global-set-key (kbd "C-c a") 'my-macro
-#+BEGIN_SRC emacs-lisp
-(fset 'md-link2-org
-   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([58 115 35 92 91 92 40 46 42 92 41 92 93 40 92 40 46 42 92 41 41 35 91 91 92 50 93 91 92 49 93 93 35 return] 0 "%d")) arg)))
-;; checked, 'm' is not defined, but there should be still a better key
-
-; change /embed/ to /watch/ and delete all after ?
-(fset 'mbb-youtube-link
-   [?I ?\[ ?\[ escape ?/ ?e ?m ?b ?e ?d return ?c ?w ?w ?a ?t ?c ?h escape ?f ?? ?C ?\] ?\[ ?y ?o ?u ?t ?u ?b ?e ?  ?v ?i ?d ?e ?o ?\] ?\] escape])
-
-;; also, move it from global to org key table
-(global-set-key (kbd "C-c m") 'md-link2-org)
-(global-set-key (kbd "C-c n") 'mbb-youtube-link)
-#+END_SRC
-
 *** org-drill
 #+BEGIN_SRC emacs-lisp
 ;(add-to-list 'load-path "~/.emacs.d/lisp/")
@@ -656,10 +414,8 @@ try [[https://github.com/abo-abo/org-download][org-download]] from abo-abo
 *** org-protocol
 not working at start-up, but after some time - it works
 #+BEGIN_SRC emacs-lisp
-(mbb/init-audit-message "--- org-protocol begin")
 (require 'org-protocol)
 (setq org-protocol-default-template-key "w")
-(mbb/init-audit-message "--- org-protocol end")
 #+END_SRC
 
 ** TODO evil
@@ -681,13 +437,15 @@ For the vim-like motions of ">>" and "<<".
 (setq-default evil-shift-width tab-width)
 #+END_SRC
 
-*** line numbers
-relative line numbers are now native
+change cursour
 
-there is more to set, like /'visual/ the controls the wrapped line handling
-#+BEGIN_SRC emacs-lisp
-(setq-default display-line-numbers 'relative)
-#+END_SRC
+(setq evil-insert-state-cursor '((bar . 5) "yellow")
+      evil-normal-state-cursor '(box "purple"))
+
+for more use
+#+begin_example
+M-x apropos RET evil cursor RET
+#+end_example
 
 *** TODO increase/decrease numbers
 Not part of default emacs. There is the [[https://github.com/cofi/evil-numbers][evil numbers]] module to add this feature.
@@ -710,6 +468,11 @@ dossent find word borders, needs to be already in one of the different spellings
 #+BEGIN_SRC emacs-lisp
 (use-package evil-string-inflection)
 #+END_SRC
+
+should look at the packages used by =doom= https://github.com/hlissner/doom-emacs
+https://github.com/hlissner/doom-emacs/blob/develop/modules/editor/evil/README.org#ported-vim-plugins
+https://github.com/hlissner/doom-emacs/blob/develop/docs/modules.org
+will not use =doom= as many of the default configurations I don't like - better to start from vanilla emacs
 
 *** evil-matchit
 https://github.com/redguardtoo/evil-matchit
@@ -790,13 +553,6 @@ Socyl is also based on =compilation-mode=, and does not group results by file AF
 
 *Great for*: Using the same search UI with multiple different search tools.
 
-***** [[https://github.com/cosmicexplorer/helm-rg][helm-rg]]
-targets Helm users.
-
-helm-rg is a [[https://github.com/emacs-helm/helm][Helm]] frontend for =rg=. In addition to the usual search features, it treats spaces in search terms specially so you
-don't need to worry about order. This neat feature means that =foo bar= is equivalent to =foo.*bar|bar.*foo=.
-
-*Great for*: Using rg with Helm, especially with multiple search terms.
 *** my setup
 [[https://github.com/BurntSushi/ripgrep][ripgrep]] the =rust= search tool project. There are some /benchmarks/ and also some other nice informations.
 
@@ -825,6 +581,13 @@ https://emacs.stackexchange.com/questions/10842/recursive-grep-in-directory-with
 
 
 TODO: there are multiple ripgrap and projectile packages - what are the differences?
+
+#+begin_src emacs-lisp
+(use-package rg
+    :ensure t)
+#+end_src
+looks like with =e= I get into the edit mode but than the evil mode conflicts
+
 
 ** helm
 https://github.com/emacs-helm/helm
@@ -1013,13 +776,6 @@ do not get an result , but the [[https://www.merriam-webster.com/dictionary/bijo
 this was not the only word where it didn't return a (known) result, e.g. /British/
 
 * programming
-#+begin_src emacs-lisp
-;; Use cperl-mode instead of the default perl-mode
-(defalias 'perl-mode 'cperl-mode)
-#+end_src
-** common
-C-j electric-newline-and-maybe-indent
-M-j indent-new-comment-line
 
 *** comment box
 Following [[http://pragmaticemacs.com/emacs/comment-boxes/][Ben Maughan]] to the original post from [[http://irreal.org/blog/?p=374][irreal]] to get the better explanation of the function.
@@ -1053,17 +809,7 @@ Following [[http://pragmaticemacs.com/emacs/comment-boxes/][Ben Maughan]] to the
 see https://www.emacswiki.org/emacs/IndentingC
 
 https://github.com/Sarcasm/irony-mode
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-x c") 'compile)
-
-;(defvaralias 'c-basic-offset 'tab-width)
-(defvaralias 'cperl-indent-level 'tab-width)
-;(setq 'cperl-indent-level 2)
-
-(setq c-default-style "stroustrup"
-    c-basic-offset 2)
-#+END_SRC
+https://gist.github.com/soonhokong/7c2bf6e8b72dbc71c93b (never read)
 
 *** test [[https://github.com/emacs-lsp/lsp-mode][lsp]]
 I think this is the modern way - start here
@@ -1302,25 +1048,6 @@ check which ones to use
 *** from VB LXDE
 Should check if the jedi/autocomplete configuration conflict with one of the other now used projects.
 If I remember correctly the Python setup didn't work.
-
-**** call search engine
-https://github.com/hrs/engine-mode
-https://www.youtube.com/watch?v=MBhJBMYfWUo
-
-default key binding C-x /
-  :x / s
-will trigger the stackoverflow search with selection
-
-(require 'engine-mode)
-(engine-mode t)
-(defengine stack-overflow
-  "https://stackoverflow.com/search?q=%s"
-  :keybinding "s")
-
-(defengine wikipedia
-  "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
-  :keybinding "E"
-  :docstring "Searchin' the wikis.")
 
 **** some autocomplete test
 

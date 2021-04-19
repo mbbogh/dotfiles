@@ -130,6 +130,13 @@ exec --no-startup-id urxvt -n dropdown -e screen
 #bindsym $mod+u [instance="dropdown"] scratchpad show; [instance="dropdown"] move position center
 bindsym $mod+u scratchpad show
 
+# scratchpad not correctly working - found this: https://github.com/Alexander-Miller/dotfiles/blob/master/.config/i3/config
+    ## Launch video from scratchpad
+    #bindsym $mod+Shift+m exec --no-startup-id "fish -c ytmpv"
+    ## Scratchpad
+    #bindsym $mod+Shift+minus move scratchpad
+    #bindsym $mod+minus scratchpad show
+
 for_window [instance="dropdown"] floating enable
 for_window [instance="dropdown"] resize set 625 400
 for_window [instance="dropdown"] move scratchpad

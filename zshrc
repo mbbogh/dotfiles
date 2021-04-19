@@ -89,4 +89,11 @@ bindkey '^e' edit-command-line
 # source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
 
 setopt interactivecomments
-setopt auto_cd
+#setopt auto_cd
+
+setopt NOCLOBBER
+setopt APPEND_CREATE
+unsetopt HIST_ALLOW_CLOBBER
+
+# needed for gpg-agent to enter password in terminal
+export GPG_TTY=$(tty)
