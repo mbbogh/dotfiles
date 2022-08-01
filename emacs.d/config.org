@@ -411,13 +411,6 @@ try [[https://github.com/abo-abo/org-download][org-download]] from abo-abo
   (setq-default org-download-image-dir "./pictures"))
 #+END_SRC
 
-*** org-protocol
-not working at start-up, but after some time - it works
-#+BEGIN_SRC emacs-lisp
-(require 'org-protocol)
-(setq org-protocol-default-template-key "w")
-#+END_SRC
-
 ** TODO evil
 from evil [[https://github.com/emacs-evil/evil][home page]]
 evil requires _undo tree_
