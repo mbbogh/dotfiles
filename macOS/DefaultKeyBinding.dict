@@ -1,0 +1,166 @@
+{
+    // "" = ("insertText:", "");
+    // use temporally for emoji till decided if I need the 'e' still for '´'
+    "~d" = {
+        "s" = { // smilly
+            "f" = ("insertText:", "🙁"); // slightly frowning face
+            "g" = ("insertText:", "😀"); // grinning face
+            "o" = ("insertText:", "😮"); // face with open mouth
+            "w" = ("insertText:", "😉"); // winking face
+            "z" = ("insertText:", "🤐"); // zipper-mouth face
+        };
+        "f" = { // Fraktur https://de.wikipedia.org/wiki/Fraktur_%28Schrift%29
+            "A" = ("insertText:", "𝔄");
+            "B" = ("insertText:", "𝔅");
+            "C" = ("insertText:", "ℭ");
+            "D" = ("insertText:", "𝔇");
+            "E" = ("insertText:", "𝔈");
+            "F" = ("insertText:", "𝔉");
+            "G" = ("insertText:", "𝔊");
+            "H" = ("insertText:", "ℌ");
+            "I" = ("insertText:", "ℑ");
+            "J" = ("insertText:", "𝔍");
+            "K" = ("insertText:", "𝔎");
+            "L" = ("insertText:", "𝔏");
+            "M" = ("insertText:", "𝔐");
+            "N" = ("insertText:", "𝔑");
+            "O" = ("insertText:", "𝔒");
+            "P" = ("insertText:", "𝔓");
+            "Q" = ("insertText:", "𝔔");
+            "R" = ("insertText:", "ℜ");
+            "S" = ("insertText:", "𝔖");
+            "T" = ("insertText:", "𝔗");
+            "U" = ("insertText:", "𝔘");
+            "V" = ("insertText:", "𝔙");
+            "W" = ("insertText:", "𝔚");
+            "X" = ("insertText:", "𝔛");
+            "Y" = ("insertText:", "𝔜");
+            "Z" = ("insertText:", "ℨ");
+            "a" = ("insertText:", "𝔞");
+            "b" = ("insertText:", "𝔟");
+            "c" = ("insertText:", "𝔠");
+            "d" = ("insertText:", "𝔡");
+            "e" = ("insertText:", "𝔢");
+            "f" = ("insertText:", "𝔣");
+            "g" = ("insertText:", "𝔤");
+            "h" = ("insertText:", "𝔥");
+            "i" = ("insertText:", "𝔦");
+            "j" = ("insertText:", "𝔧");
+            "k" = ("insertText:", "𝔨");
+            "l" = ("insertText:", "𝔩");
+            "m" = ("insertText:", "𝔪");
+            "n" = ("insertText:", "𝔫");
+            "o" = ("insertText:", "𝔬");
+            "p" = ("insertText:", "𝔭");
+            "q" = ("insertText:", "𝔮");
+            "r" = ("insertText:", "𝔯");
+            "s" = ("insertText:", "𝔰");
+            "t" = ("insertText:", "𝔱");
+            "u" = ("insertText:", "𝔲");
+            "v" = ("insertText:", "𝔳");
+            "w" = ("insertText:", "𝔴");
+            "x" = ("insertText:", "𝔵");
+            "y" = ("insertText:", "𝔶");
+            "z" = ("insertText:", "𝔷");
+        };
+        "g" = { // greek
+            /*
+              https://en.wikipedia.org/wiki/Keyboard_layout#Greek
+              The usual Greek layout follows the US layout for letters related to Latin letters (
+              ABDEHIKLMNOPRSTXYZ
+              ΑΒΔΕΗΙΚΛΜΝΟΠΡΣΤΧΥΖ, respectively), substitutes phonetically similar letters (
+              Φ at F; Γ at G) and uses the remaining slots for the remaining Greek letters:
+              Ξ at J; Ψ at C; Ω at V; Θ at U).
+
+              Greek has two fewer letters than English, but has two diacritic marks which, because of their frequency, are placed on the home row at the U.K. ";" position; they are dead keys. Word-final sigma has its own position as well, replacing W, and semicolon (which is used as a question mark in Greek) and colon move to the position of Q.
+            */
+
+            "A" = ("insertText:", "Α"); // Alpha
+            "B" = ("insertText:", "Β"); // Beta
+            "G" = ("insertText:", "Γ"); // Gamma
+            "D" = ("insertText:", "Δ"); // Delta
+            "E" = ("insertText:", "Ε"); // Epsilon
+            "Z" = ("insertText:", "Ζ"); // Zeta
+            "H" = ("insertText:", "Η"); // Eta
+            "U" = ("insertText:", "Θ"); // Theta
+            "I" = ("insertText:", "Ι"); // Iota
+            "K" = ("insertText:", "Κ"); // Kappa
+            "L" = ("insertText:", "Λ"); // Lambda
+            "M" = ("insertText:", "Μ"); // Mu
+            "N" = ("insertText:", "Ν"); // Nu
+            "J" = ("insertText:", "Ξ"); // Xi
+            "O" = ("insertText:", "Ο"); // Omicron
+            "P" = ("insertText:", "Π"); // Pi
+            "R" = ("insertText:", "Ρ"); // Rho
+            "S" = ("insertText:", "Σ"); // Sigma
+            "T" = ("insertText:", "Τ"); // Tau
+            "Y" = ("insertText:", "Υ"); // Upsilon
+            "F" = ("insertText:", "Φ"); // Phi
+            "X" = ("insertText:", "Χ"); // Chi
+            "C" = ("insertText:", "Ψ"); // Psi
+            "V" = ("insertText:", "Ω"); // Omega
+
+            "a" = ("insertText:", "α"); // alpha
+            "b" = ("insertText:", "β"); // beta
+            "g" = ("insertText:", "γ"); // gamma
+            "d" = ("insertText:", "δ"); // delta
+            "e" = ("insertText:", "ε"); // epsilon
+            "z" = ("insertText:", "ζ"); // zeta
+            "h" = ("insertText:", "η"); // eta
+            "u" = ("insertText:", "θ"); // theta
+            "i" = ("insertText:", "ι"); // iota
+            "k" = ("insertText:", "κ"); // kappa
+            "l" = ("insertText:", "λ"); // lambda
+            "m" = ("insertText:", "μ"); // mu
+            "n" = ("insertText:", "ν"); // nu
+            "j" = ("insertText:", "ξ"); // xi
+            "o" = ("insertText:", "ο"); // omicron
+            "p" = ("insertText:", "π"); // pi
+            "r" = ("insertText:", "ρ"); // rho
+            "~s" = ("insertText:", "ς"); // sigmaf (Nur und immer am Wortende, außer es folgt ein Apostroph)
+            "s" = ("insertText:", "σ"); // sigma
+            "t" = ("insertText:", "τ"); // tau
+            "y" = ("insertText:", "υ"); // upsilon
+            "f" = ("insertText:", "φ"); // phi
+            "x" = ("insertText:", "χ"); // chi
+            "c" = ("insertText:", "ψ"); // psi
+            "v" = ("insertText:", "ω"); // omega
+        };
+        "G" = { // Gegenstand
+            "p" = ("insertText:", "💩"); // pile of poo
+        };
+        "m" = { // math
+            "a" = ("insertText:", "ø"); // average / Durchschnitt (danish letter, or use the capital one Ø?)
+            "d" = ("insertText:", "⌀"); // diameter sign / Durchmesserzeichen
+            "-" = ("insertText:", "±"); // \pm
+            "=" = ("insertText:", "≈"); // \approx
+            "!" = ("insertText:", "≠"); // \neq
+            "+" = ("insertText:", "≡"); // \equiv
+            "<" = ("insertText:", "≤"); // \leq
+            ">" = ("insertText:", "≥"); // \geq
+        };
+        "v" = { // version control
+            // idea from gitmojis
+            "T" = ("insertText:", "🧪"); // test tube - add a failing tests
+            "f" = ("insertText:", "🩹"); // adhesive bandage - simple fix for a non-critical issue
+            "b" = ("insertText:", "🐛"); // bug - fix a bug
+            "a" = ("insertText:", "🚑️"); // ambulance - critical hotfix
+            "c" = ("insertText:", "🚧"); // construction - work in progress
+            "l" = ("insertText:", "⚡️"); // zap (unknown name, lightning bolt or high voltage) - improve performance
+
+            // added by me
+            "h" = ("insertText:", "🛠"); // hammer and wrench - configuration and build
+            "t" = ("insertText:", "🪤"); // mouse trap - catch errors
+            /*
+                would should I use for "added"
+                they have ✨(sparkles) as "introduce new features" and ✅ "add, update, or pass tests" (/add/ would be more like finished a /request/)
+                the search for /new/ listed countries (New Zealand or New Caledonia) and /moon/ and /box/
+                it could also be 🌑(new moon symbol) but I think I like the face much better
+                but I think I will use ➕(heavy plus sign) as it is simple to spot, but than why no =+= direct?
+            */
+            "n" = ("insertText:", "🌚"); // new moon face - THINK added something new
+            "N" = ("insertText:", "🆕"); // new button (apple: new sign; emacs: squared new) - THINK for /added/
+            "+" = ("insertText:", "➕");heavy plus sign - START using for /added/
+        };
+    };
+}
